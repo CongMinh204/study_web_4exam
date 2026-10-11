@@ -104,6 +104,37 @@ test("gradeTest chấm điểm theo phần trăm", () => {
   assert.equal(g.score, 75);
 });
 
+const quizCard = {
+  id: "q",
+  term: "Câu 1. Triết học ra đời do đâu?\n\nA. Do ý muốn chủ quan\nB. Do lý tính thế giới\nC. Do nhu cầu của thực tiễn.\nD. Cả a, b và c",
+  definition: "C. Do nhu cầu của thực tiễn.",
+};
+
+test("parseQuiz tách câu hỏi, phương án và đáp án", () => {
+  const q = study.parseQuiz(quizCard);
+  assert.equal(q.question, "Câu 1. Triết học ra đời do đâu?");
+  assert.deepEqual(q.options.map((o) => o.key), ["A", "B", "C", "D"]);
+  assert.equal(q.answer.key, "C");
+  assert.equal(study.parseQuiz(cards[0]), null);
+  assert.equal(study.parseQuiz({ term: quizCard.term, definition: "E. không có" }), null);
+});
+
+test("checkAnswer với đáp án dạng 'C. nội dung' nhận chữ cái hoặc nội dung", () => {
+  assert.equal(study.checkAnswer("c", quizCard.definition).correct, true);
+  assert.equal(study.checkAnswer("Do nhu cầu của thực tiễn", quizCard.definition).correct, true);
+  assert.equal(study.checkAnswer("b", quizCard.definition).correct, false);
+});
+
+test("buildTest với thẻ trắc nghiệm dùng chính các phương án, giữ thứ tự A–D", () => {
+  const pool = [quizCard, { ...quizCard, id: "q2" }];
+  const [mc, tf] = study.buildTest(pool, { count: 2, types: ["mc", "tf"] }, seeded(4));
+  assert.equal(mc.quiz, true);
+  assert.equal(mc.prompt, "Câu 1. Triết học ra đời do đâu?");
+  assert.deepEqual(mc.choices, ["Do ý muốn chủ quan", "Do lý tính thế giới", "Do nhu cầu của thực tiễn.", "Cả a, b và c"]);
+  assert.equal(study.gradeQuestion(mc, "Do nhu cầu của thực tiễn."), true);
+  assert.equal(tf.isTrue, tf.shown.startsWith("C."));
+});
+
 test("formatDuration", () => {
   assert.equal(study.formatDuration(12345), "12.3s");
   assert.equal(study.formatDuration(83400), "1:23.4");

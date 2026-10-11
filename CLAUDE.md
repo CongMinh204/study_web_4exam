@@ -114,11 +114,14 @@ assets/
   js/store.js         # App.store — repository localStorage + dữ liệu mẫu
   js/ui.js            # App.ui — navbar, footer, reveal, modal, menu, toast, phát âm, study bar
   js/pages/*.js       # logic riêng cho từng trang
+  data/*.js           # bộ thẻ có sẵn (App.PACKS), ví dụ mln111.js — Triết học Mác – Lê-nin
 scripts/              # serve.mjs, screenshot.mjs, smoke.mjs
 tests/                # unit test (node:test)
 ```
 
-Thứ tự nạp script trong mọi trang: `icons.js` → `study.js` → `store.js` → `ui.js` → `pages/<trang>.js`.
+Thứ tự nạp script trong mọi trang: `icons.js` → `study.js` → `data/*.js` → `store.js` → `ui.js` → `pages/<trang>.js`.
+
+**Bộ thẻ có sẵn**: mỗi file `assets/data/*.js` nối một gói `{ id, subject, sets: [{ title, description, cards: [[term, definition]] }] }` vào `App.PACKS`. `store.js` thêm gói vào dữ liệu người dùng đúng một lần (ghi `id` vào `prefs.installedPacks`), nên người dùng xóa môn thì môn không tự quay lại. Sửa nội dung một gói đã phát hành thì đổi `id` (ví dụ `mln111-v2`). Gói được sinh bằng script từ file nguồn, không sửa tay.
 
 ## Mô hình dữ liệu
 
@@ -179,6 +182,7 @@ type TestResult = {
 - **Trắc nghiệm**: 4 phương án, đáp án nhiễu lấy ngẫu nhiên từ định nghĩa khác trong cùng học phần. Học phần < 4 thẻ thì giảm số phương án tương ứng.
 - **So khớp đáp án tự gõ**: bỏ qua hoa/thường, khoảng trắng thừa và dấu câu cuối; có tùy chọn bỏ qua dấu tiếng Việt. Đáp án ghi nhiều phương án cách nhau bởi `;` hoặc `/` thì khớp một phương án là đúng. Sai 1–2 ký tự được báo "Gần đúng" (vẫn tính sai).
 - Cho phép chọn hướng hỏi: thuật ngữ → định nghĩa, định nghĩa → thuật ngữ, hoặc cả hai.
+- **Thẻ trắc nghiệm** (`study.parseQuiz`): mặt trước là câu hỏi rồi các dòng `A. …`–`D. …`, mặt sau bắt đầu bằng chữ cái đáp án (`C. …`). Flashcards hiện câu hỏi + danh sách phương án; Học luôn hỏi trắc nghiệm bằng chính các phương án (không trộn thứ tự vì có phương án kiểu "Cả a, b và c"); Kiểm tra dùng phương án gốc và chấm tự luận nhận cả chữ cái lẫn nội dung; Ghép thẻ ghép câu hỏi với nội dung đáp án.
 - Trộn ngẫu nhiên dùng Fisher–Yates; nhận `seed`/random fn làm tham số để test được.
 
 ## Design system

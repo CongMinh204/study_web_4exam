@@ -162,22 +162,46 @@
     return state;
   }
 
+  // Bộ thẻ có sẵn (assets/data/*.js) được thêm đúng một lần cho mỗi người dùng;
+  // ghi id vào prefs.installedPacks để môn đã bị xóa không tự xuất hiện lại.
+  function installPacks(s) {
+    const packs = (window.App && App.PACKS) || [];
+    const installed = (s.prefs.installedPacks = s.prefs.installedPacks || []);
+    let changed = false;
+    packs.forEach((pack, pi) => {
+      if (installed.includes(pack.id)) return;
+      const now = Date.now() + pi;
+      const subject = { id: uid(), ...pack.subject, createdAt: now, updatedAt: now };
+      s.subjects.push(subject);
+      pack.sets.forEach((set, ti) => {
+        const studySet = { id: uid(), subjectId: subject.id, title: set.title, description: set.description || "", createdAt: now + ti, updatedAt: now + ti };
+        s.sets.push(studySet);
+        set.cards.forEach(([term, definition], order) => s.cards.push({ id: uid(), setId: studySet.id, term, definition, order }));
+      });
+      installed.push(pack.id);
+      changed = true;
+    });
+    return changed;
+  }
+
   let memoryOnly = false;
   let state = load();
 
   function load() {
+    let s = null;
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && parsed.version === VERSION) return normalize(parsed);
+        if (parsed && parsed.version === VERSION) s = normalize(parsed);
       }
     } catch {
       memoryOnly = true;
     }
-    const fresh = seed();
-    persist(fresh);
-    return fresh;
+    const fresh = !s;
+    if (fresh) s = seed();
+    if (installPacks(s) || fresh) persist(s);
+    return s;
   }
 
   function normalize(s) {
@@ -369,10 +393,12 @@
         throw new Error("Tệp không đúng định dạng dữ liệu của Recall");
       }
       state = normalize(data);
+      installPacks(state);
       commit();
     },
     resetToSample() {
       state = seed();
+      installPacks(state);
       commit();
     },
   };

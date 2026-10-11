@@ -140,8 +140,8 @@
   }
 
   function questionHtml(q, i) {
-    const askLabel = SIDE_LABEL[q.ask];
-    const answerLabel = SIDE_LABEL[q.ask === "term" ? "definition" : "term"];
+    const askLabel = q.quiz ? "Câu hỏi" : SIDE_LABEL[q.ask];
+    const answerLabel = q.quiz ? "Đáp án" : SIDE_LABEL[q.ask === "term" ? "definition" : "term"];
     let body;
     if (q.type === "mc") {
       body = `<div class="question__ask">Chọn ${answerLabel.toLowerCase()} đúng</div>
@@ -150,19 +150,19 @@
           .join("")}</div>`;
     } else if (q.type === "tf") {
       body = `<div class="tf__pair"><small>${answerLabel}</small><div>${esc(q.shown)}</div></div>
-        <div class="question__ask">Cặp thẻ này có đúng không?</div>
+        <div class="question__ask">${q.quiz ? "Đây có phải đáp án đúng không?" : "Cặp thẻ này có đúng không?"}</div>
         <div class="tf">
           <button class="option" type="button" data-value="true" aria-pressed="false"><span class="option__key">${icon("check")}</span><span class="option__text">Đúng</span></button>
           <button class="option" type="button" data-value="false" aria-pressed="false"><span class="option__key">${icon("x")}</span><span class="option__text">Sai</span></button>
         </div>`;
     } else {
-      body = `<label class="question__ask" for="in-${q.id}">Gõ ${answerLabel.toLowerCase()}</label>
-        <div class="answer-row"><input class="input" id="in-${q.id}" placeholder="Nhập đáp án" autocomplete="off" autocapitalize="off" spellcheck="false" /></div>`;
+      body = `<label class="question__ask" for="in-${q.id}">${q.quiz ? "Gõ chữ cái hoặc nội dung đáp án" : `Gõ ${answerLabel.toLowerCase()}`}</label>
+        <div class="answer-row"><input class="input" id="in-${q.id}" placeholder="${q.quiz ? "Ví dụ: C" : "Nhập đáp án"}" autocomplete="off" autocapitalize="off" spellcheck="false" /></div>`;
     }
     return `
       <article class="question" data-q="${q.id}" aria-label="Câu ${i + 1}">
         <div class="question__head"><span>${askLabel} · ${TYPE_LABEL[q.type]}</span><span>${i + 1} / ${questions.length}</span></div>
-        <div class="question__prompt">${esc(q.prompt)}</div>
+        <div class="question__prompt${q.quiz ? " question__prompt--quiz" : ""}">${esc(q.prompt)}</div>
         ${body}
       </article>`;
   }

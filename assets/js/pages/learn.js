@@ -83,31 +83,38 @@
     if (!queue.length) return remaining().length ? roundDone() : finished(false);
     const card = queue.shift();
     const box = boxOf(card);
-    const type = box < 2 && all.length >= 2 ? "mc" : "written";
+    // Thẻ trắc nghiệm (câu hỏi kèm A–D) luôn hỏi bằng chính các phương án của nó
+    const quiz = study.parseQuiz(card);
+    const type = quiz || (box < 2 && all.length >= 2) ? "mc" : "written";
     let askField;
-    if (opts.direction === "auto") askField = type === "mc" ? "term" : "definition";
+    if (quiz || opts.direction === "auto") askField = type === "mc" ? "term" : "definition";
     else askField = opts.direction;
     const answerField = askField === "term" ? "definition" : "term";
-    current = { card, type, askField, answerField, prevBox: box, answered: false, requeued: false };
+    current = { card, type, quiz, askField, answerField, prevBox: box, answered: false, requeued: false };
+    current.prompt = quiz ? quiz.question : card[askField];
+    current.answerText = card[answerField];
 
     const label = { term: "Thuật ngữ", definition: "Định nghĩa" };
     const app = document.getElementById("app");
     const head = `
       <div class="question__head">
-        <span>${label[askField]}</span>
+        <span>${quiz ? "Câu hỏi" : label[askField]}</span>
         <span style="display:flex;gap:2px">
           <button class="icon-btn" type="button" id="q-speak" aria-label="Phát âm">${icon("volume")}</button>
         </span>
       </div>
-      <div class="question__prompt">${esc(card[askField])}</div>`;
+      <div class="question__prompt${quiz ? " question__prompt--quiz" : ""}">${esc(current.prompt)}</div>`;
 
     let body;
     if (type === "mc") {
-      current.choices = study.buildChoices(card, all, answerField, 4);
+      // Giữ nguyên thứ tự A–D của thẻ trắc nghiệm vì có phương án kiểu "Cả a, b và c"
+      current.choices = quiz ? quiz.options.map((o) => o.text) : study.buildChoices(card, all, answerField, 4);
+      current.correct = quiz ? quiz.answer.text : card[answerField];
+      const keys = quiz ? quiz.options.map((o) => o.key) : current.choices.map((_, i) => i + 1);
       body = `
-        <div class="question__ask">Chọn ${label[answerField].toLowerCase()} đúng</div>
+        <div class="question__ask">${quiz ? "Chọn đáp án đúng" : `Chọn ${label[answerField].toLowerCase()} đúng`}</div>
         <div class="options">${current.choices
-          .map((c, i) => `<button class="option" type="button" data-choice="${i}"><span class="option__key">${i + 1}</span><span class="option__text">${esc(c)}</span></button>`)
+          .map((c, i) => `<button class="option" type="button" data-choice="${i}"><span class="option__key">${keys[i]}</span><span class="option__text">${esc(c)}</span></button>`)
           .join("")}</div>`;
     } else {
       body = `
@@ -120,7 +127,7 @@
     }
 
     app.innerHTML = `${updateMeter()}<div class="question is-entering">${head}${body}<div id="feedback"></div></div>`;
-    document.getElementById("q-speak").addEventListener("click", () => speak(card[askField]));
+    document.getElementById("q-speak").addEventListener("click", () => speak(current.prompt));
 
     if (type === "mc") {
       app.querySelectorAll("[data-choice]").forEach((b) => b.addEventListener("click", () => answerMc(Number(b.dataset.choice))));
@@ -139,10 +146,10 @@
     if (current.answered) return;
     current.answered = true;
     const chosen = current.choices[i];
-    const correct = chosen === current.card[current.answerField];
+    const correct = chosen === current.correct;
     document.querySelectorAll("[data-choice]").forEach((b, idx) => {
       b.disabled = true;
-      const isAnswer = current.choices[idx] === current.card[current.answerField];
+      const isAnswer = current.choices[idx] === current.correct;
       if (isAnswer) b.classList.add("is-correct");
       else if (idx === i) b.classList.add("is-wrong");
       else b.classList.add("is-dim");
@@ -178,11 +185,12 @@
 
   function feedback(correct, { given, close, written }) {
     const host = document.getElementById("feedback");
-    const answer = current.card[current.answerField];
+    const answer = current.answerText;
+    const nextHint = current.quiz ? "Trả lời đúng thêm một lần ở vòng sau để thuộc thẻ này." : "Thẻ sẽ quay lại ở vòng sau dưới dạng tự luận.";
     if (correct) {
       host.innerHTML = `
         <div class="feedback feedback--ok">
-          <div class="feedback__msg"><b>${icon("circle-check")}Chính xác!</b><span class="muted">${boxOf(current.card) >= study.MAX_BOX ? "Thẻ này đã được đánh dấu là đã thuộc." : "Thẻ sẽ quay lại ở vòng sau dưới dạng tự luận."}</span></div>
+          <div class="feedback__msg"><b>${icon("circle-check")}Chính xác!</b><span class="muted">${boxOf(current.card) >= study.MAX_BOX ? "Thẻ này đã được đánh dấu là đã thuộc." : nextHint}</span></div>
           <div class="feedback__actions"><button class="btn btn-primary" type="button" id="continue">Tiếp tục <span class="kbd" style="margin-left:4px">Enter</span></button></div>
         </div>`;
       advanceTimer = setTimeout(ask, 1100);
@@ -225,7 +233,7 @@
           ${roundCards
             .map((c) => {
               const m = study.masteryOf(boxOf(c));
-              return `<div class="term"><div class="term__term">${esc(c.term)}</div><div class="term__def">${esc(c.definition)}</div><span class="chip chip--${m}">${study.MASTERY_LABEL[m]}</span></div>`;
+              return `<div class="term"><div class="term__term pre">${esc(c.term)}</div><div class="term__def">${esc(c.definition)}</div><span class="chip chip--${m}">${study.MASTERY_LABEL[m]}</span></div>`;
             })
             .join("")}
         </div>
@@ -270,9 +278,11 @@
       document.getElementById("continue").click();
       return;
     }
-    if (current && current.type === "mc" && !current.answered && /^[1-4]$/.test(e.key)) {
-      const i = Number(e.key) - 1;
-      if (i < current.choices.length) answerMc(i);
+    if (current && current.type === "mc" && !current.answered) {
+      // Phím 1–4, hoặc A–F với thẻ trắc nghiệm
+      let i = /^[1-4]$/.test(e.key) ? Number(e.key) - 1 : -1;
+      if (current.quiz && /^[a-f]$/i.test(e.key)) i = e.key.toUpperCase().charCodeAt(0) - 65;
+      if (i >= 0 && i < current.choices.length) answerMc(i);
     }
   }
 

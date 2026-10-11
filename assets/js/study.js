@@ -47,11 +47,31 @@
     return prev[b.length];
   }
 
+  // Thẻ trắc nghiệm: mặt trước là câu hỏi rồi các dòng "A. …", "B. …"; mặt sau bắt đầu bằng chữ cái đáp án.
+  // Trả về null nếu thẻ không theo dạng này.
+  function parseQuiz(card) {
+    const question = [];
+    const options = [];
+    for (const line of String(card.term || "").split(/\r?\n/)) {
+      const m = line.match(/^\s*([A-F])[.)]\s+(.+)$/);
+      if (m) options.push({ key: m[1], text: m[2].trim() });
+      else if (!options.length) question.push(line);
+    }
+    const am = String(card.definition || "").trim().match(/^([A-F])[.)](\s|$)/);
+    const answer = am && options.find((o) => o.key === am[1]);
+    if (options.length < 2 || !answer) return null;
+    return { question: question.join("\n").trim(), options, answer };
+  }
+
   // Đáp án có thể ghi nhiều phương án cách nhau bởi "/" hoặc ";" — khớp một phương án là đúng.
+  // Đáp án dạng "C. nội dung" chấp nhận cả chữ cái "C" lẫn phần nội dung.
   function checkAnswer(given, expected, opts = {}) {
     const g = normalizeAnswer(given, opts);
     if (!g) return { correct: false, close: false };
-    const variants = [expected, ...String(expected).split(/\s*[/;]\s*/)]
+    const lettered = String(expected).trim().match(/^([A-F])[.)]\s+(.+)$/s);
+    const base = lettered ? [expected, lettered[1], lettered[2]] : [expected];
+    const variants = base
+      .flatMap((v) => [v, ...String(v).split(/\s*[/;]\s*/)])
       .map((v) => normalizeAnswer(v, opts))
       .filter(Boolean);
     if (variants.includes(g)) return { correct: true, close: false };
@@ -123,6 +143,8 @@
     const typeList = usable.length ? usable : ["written"];
     return picked.map((card, i) => {
       const type = typeList[i % typeList.length];
+      const quiz = parseQuiz(card);
+      if (quiz) return quizQuestion(card, quiz, type, i, rand);
       const ask = sideFor(direction, rand);
       const answerField = ask === "term" ? "definition" : "term";
       const q = { id: `q${i + 1}`, cardId: card.id, type, ask, prompt: card[ask], answer: card[answerField] };
@@ -135,6 +157,23 @@
       }
       return q;
     });
+  }
+
+  // Thẻ trắc nghiệm luôn hỏi câu hỏi gốc. Phương án giữ nguyên thứ tự vì có phương án kiểu "Cả a, b và c".
+  function quizQuestion(card, quiz, type, i, rand) {
+    const q = { id: `q${i + 1}`, cardId: card.id, type, ask: "term", quiz: true, prompt: card.term, answer: card.definition };
+    if (type === "mc") {
+      q.prompt = quiz.question;
+      q.choices = quiz.options.map((o) => o.text);
+      q.answer = quiz.answer.text;
+    }
+    if (type === "tf") {
+      const wrong = quiz.options.filter((o) => o.key !== quiz.answer.key);
+      const pick = rand() < 0.5 || !wrong.length ? quiz.answer : wrong[Math.floor(rand() * wrong.length)];
+      q.shown = `${pick.key}. ${pick.text}`;
+      q.isTrue = pick.key === quiz.answer.key;
+    }
+    return q;
   }
 
   function gradeQuestion(q, given, opts) {
@@ -170,6 +209,7 @@
     normalizeAnswer,
     levenshtein,
     checkAnswer,
+    parseQuiz,
     buildChoices,
     nextBox,
     masteryOf,

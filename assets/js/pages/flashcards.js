@@ -86,23 +86,32 @@
     const p = store.progress(card.id);
     const frontField = opts.front;
     const backField = frontField === "term" ? "definition" : "term";
-    const label = { term: "Thuật ngữ", definition: "Định nghĩa" };
+    const quiz = study.parseQuiz(card);
+    const label = quiz ? { term: "Câu hỏi", definition: "Đáp án" } : { term: "Thuật ngữ", definition: "Định nghĩa" };
     const long = (t) => (t.length > 80 ? "fc__text fc__text--long" : "fc__text");
+    // Thẻ trắc nghiệm: mặt câu hỏi hiện câu hỏi + danh sách phương án, căn trái để dễ đọc
+    const face = (field) =>
+      quiz && field === "term"
+        ? `<div class="fc__quiz"><p class="fc__quiz-q">${esc(quiz.question)}</p><ul class="fc__quiz-opts">${quiz.options
+            .map((o) => `<li><b>${o.key}.</b><span>${esc(o.text)}</span></li>`)
+            .join("")}</ul></div>`
+        : `<div class="${long(card[field])}">${esc(card[field])}</div>`;
+    const faceClass = (field) => (quiz && field === "term" ? " fc__face--quiz" : "");
     flipped = false;
 
     app.innerHTML = `
       <div class="fc-scene">
         <div class="fc ${direction === "prev" ? "is-entering-back" : "is-entering"}" id="fc" role="button" tabindex="0" aria-label="Thẻ ${index + 1}. Nhấn để lật">
-          <div class="fc__face">
+          <div class="fc__face${faceClass(frontField)}">
             <span class="fc__label">${label[frontField]}</span>
             ${tools(card, p)}
-            <div class="${long(card[frontField])}">${esc(card[frontField])}</div>
+            ${face(frontField)}
             <span class="fc__hint"><span class="hide-touch">Nhấn hoặc <span class="kbd">Space</span> để lật</span><span class="show-touch">Chạm để lật · vuốt để chuyển thẻ</span></span>
           </div>
-          <div class="fc__face fc__face--back" aria-hidden="true">
+          <div class="fc__face fc__face--back${faceClass(backField)}" aria-hidden="true">
             <span class="fc__label">${label[backField]}</span>
             ${tools(card, p)}
-            <div class="${long(card[backField])}">${esc(card[backField])}</div>
+            ${face(backField)}
           </div>
         </div>
       </div>

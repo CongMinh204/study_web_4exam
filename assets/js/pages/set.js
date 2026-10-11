@@ -123,7 +123,7 @@
         const p = store.progress(c.id);
         const m = study.masteryOf(p.box);
         return `<div class="term">
-          <div class="term__term">${esc(c.term)}<div style="margin-top:8px"><span class="chip chip--${m}">${study.MASTERY_LABEL[m]}</span></div></div>
+          <div class="term__term"><span class="pre">${esc(c.term)}</span><div style="margin-top:8px"><span class="chip chip--${m}">${study.MASTERY_LABEL[m]}</span></div></div>
           <div class="term__def">${esc(c.definition)}</div>
           <div class="term__actions">
             <button class="icon-btn" type="button" data-speak="${c.id}" aria-label="Phát âm ${esc(c.term)}">${icon("volume")}</button>

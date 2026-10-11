@@ -36,13 +36,14 @@ for (const vp of VIEWPORTS) {
   // Dữ liệu mẫu sinh id ngẫu nhiên cho mỗi trình duyệt mới, nên đường dẫn có thể dùng
   // {subject} / {set} để thay bằng id của môn học / học phần đầu tiên.
   let url = target;
-  if (/\{(subject|set)\}/.test(url)) {
+  // {set:7} = học phần thứ 8 (đếm từ 0) theo thứ tự lưu.
+  if (/\{(subject|set)(:\d+)?\}/.test(url)) {
     await page.goto(BASE + "/index.html", { waitUntil: "networkidle" });
     const ids = await page.evaluate(() => {
       const s = JSON.parse(localStorage.getItem("recall.v1"));
-      return { subject: s.subjects[0].id, set: s.sets[0].id };
+      return { subject: s.subjects.map((x) => x.id), set: s.sets.map((x) => x.id) };
     });
-    url = url.replace("{subject}", ids.subject).replace("{set}", ids.set);
+    url = url.replace(/\{(subject|set)(?::(\d+))?\}/g, (_, kind, i) => ids[kind][Number(i || 0)]);
   }
   await page.goto(BASE + url, { waitUntil: "networkidle" });
 

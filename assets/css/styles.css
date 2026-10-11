@@ -2859,6 +2859,79 @@ button {
   font-weight: 500;
 }
 
+/* Thẻ trắc nghiệm: câu hỏi + phương án, căn trái; nội dung dài thì cuộn trong thẻ */
+.fc__face--quiz {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  justify-content: safe center;
+  padding: 56px 40px 24px;
+  text-align: left;
+}
+
+/* Nội dung có thể cuộn nên gợi ý nằm cuối nội dung thay vì ghim ở đáy thẻ */
+.fc__face--quiz .fc__hint {
+  position: static;
+  transform: none;
+  align-self: center;
+  margin-top: 20px;
+}
+
+.fc__quiz {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.fc__quiz-q {
+  margin: 0 0 20px;
+  font-size: clamp(18px, 2.2vw, 22px);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.fc__quiz-opts {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fc__quiz-opts li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.fc__quiz-opts b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.fc__quiz-opts span {
+  overflow-wrap: anywhere;
+}
+
+.question__prompt.question__prompt--quiz {
+  font-size: clamp(18px, 2.2vw, 24px);
+  line-height: 1.4;
+}
+
+.pre {
+  white-space: pre-line;
+}
+
 .show-touch {
   display: none;
 }

@@ -53,13 +53,24 @@
     document.getElementById("start").addEventListener("click", play);
   }
 
+  // Thẻ trắc nghiệm: ghép câu hỏi với nội dung đáp án. Đáp án kiểu "Cả a, b và c" vô nghĩa khi
+  // tách khỏi phương án nên bỏ qua (trừ khi không đủ thẻ khác).
+  const VAGUE = /^(cả|tất cả|phương án|[a-d] và|không có)/i;
+  function pairOf(c) {
+    const quiz = study.parseQuiz(c);
+    if (!quiz) return { term: c.term, definition: c.definition, vague: false };
+    return { term: quiz.question, definition: quiz.answer.text, vague: VAGUE.test(quiz.answer.text) };
+  }
+
   function play() {
-    const picked = study.shuffle(cards).slice(0, PAIRS);
+    const all = study.shuffle(cards).map((c) => ({ card: c, ...pairOf(c) }));
+    const clear = all.filter((x) => !x.vague);
+    const picked = (clear.length >= Math.min(PAIRS, all.length) ? clear : all).slice(0, PAIRS);
     pairs = picked.length;
     tiles = study.shuffle(
-      picked.flatMap((c) => [
-        { id: `${c.id}:t`, cardId: c.id, text: c.term },
-        { id: `${c.id}:d`, cardId: c.id, text: c.definition },
+      picked.flatMap((x) => [
+        { id: `${x.card.id}:t`, cardId: x.card.id, text: x.term },
+        { id: `${x.card.id}:d`, cardId: x.card.id, text: x.definition },
       ])
     );
     selected = null;

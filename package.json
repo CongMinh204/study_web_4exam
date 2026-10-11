@@ -1,0 +1,15 @@
+{
+  "name": "recall-study-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Website ôn tập nhiều môn học theo phong cách Quizlet",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "screenshot": "node scripts/screenshot.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "test": "node --test \"tests/**/*.test.mjs\""
+  },
+  "devDependencies": {
+    "playwright-core": "^1.48.0"
+  }
+}

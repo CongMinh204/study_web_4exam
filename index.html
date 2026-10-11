@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Recall — Ôn tập mọi môn học</title>
+    <meta name="description" content="Recall giúp bạn ôn tập mọi môn học bằng flashcards, học thích ứng, kiểm tra và ghép thẻ." />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2.5' y='7' width='14' height='14' rx='3.5' fill='%23fff' opacity='.35'/%3E%3Crect x='7.5' y='3' width='14' height='14' rx='3.5' fill='%23fff'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <header data-nav></header>
+
+    <main>
+      <!-- ===== Hero ===== -->
+      <section class="hero container" aria-labelledby="hero-title">
+        <h1 class="display hero__title lines" id="hero-title" data-reveal>
+          <span class="line"><span>Recall là trợ lý ôn tập</span></span>
+          <span class="line"><span>cho mọi môn học, từ thẻ</span></span>
+          <span class="line"><span>đầu tiên đến ngày thi</span></span>
+        </h1>
+
+        <div class="hero__row" data-reveal style="--delay: 250ms">
+          <div class="hero__cta">
+            <a class="btn btn-primary" href="#subjects">Bắt đầu ôn tập</a>
+            <a class="btn btn-secondary" href="#import">Tạo học phần</a>
+          </div>
+          <span class="hero__note">Miễn phí · Không cần tài khoản · Lưu ngay trên thiết bị</span>
+        </div>
+
+        <div class="mock" data-reveal style="--delay: 400ms" aria-hidden="true">
+          <div class="mock__canvas">
+            <span class="mock__tab">Tiếng Anh / IELTS: Chủ đề Môi trường</span>
+            <div class="glow-frame">
+              <div class="mock-card">
+                <div class="mock-card__inner">
+                  <div class="mock-card__face">
+                    <span class="mock-card__label">Thuật ngữ</span>
+                    <span class="mock-card__term">sustainable</span>
+                  </div>
+                  <div class="mock-card__face mock-card__face--back">
+                    <span class="mock-card__label">Định nghĩa</span>
+                    <span class="mock-card__def">bền vững</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mock__toolbar">
+                <span class="t" data-icon="layers"></span>
+                <span class="t" data-icon="chevron-left"></span>
+                <em>3 / 12</em>
+                <span class="t" data-icon="chevron-right"></span>
+                <span class="t" data-icon="shuffle"></span>
+              </div>
+            </div>
+          </div>
+          <div class="mock__side">
+            <div class="mock__side-head">Học phần <span class="mock__pill">12 thẻ</span></div>
+            <div class="mock__item"><b>pollution</b><span>sự ô nhiễm</span></div>
+            <div class="mock__item is-active"><b>sustainable</b><span>bền vững</span></div>
+            <div class="mock__item"><b>habitat</b><span>môi trường sống</span></div>
+            <p class="mock__text">Bạn đã thuộc 7 / 12 thẻ. Ôn lại 5 thẻ còn lại bằng chế độ Học để ghi nhớ lâu hơn.</p>
+            <div class="mock__input">
+              Thêm thẻ: renewable energy — năng lượng tái tạo
+              <div class="mock__input-row"><span>Tab để chuyển cột</span><span class="mock__send" data-icon="arrow-up"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="logos" data-stagger aria-label="Các môn học phổ biến">
+          <span class="logos__item" data-icon-before="languages">Tiếng Anh</span>
+          <span class="logos__item" data-icon-before="calculator">Toán học</span>
+          <span class="logos__item" data-icon-before="atom">Vật lý</span>
+          <span class="logos__item" data-icon-before="flask">Hóa học</span>
+          <span class="logos__item" data-icon-before="leaf">Sinh học</span>
+          <span class="logos__item" data-icon-before="landmark">Lịch sử</span>
+          <span class="logos__item" data-icon-before="globe">Địa lý</span>
+          <span class="logos__item" data-icon-before="code">Lập trình</span>
+        </div>
+      </section>
+
+      <!-- ===== Chế độ học ===== -->
+      <section class="section container" id="features" aria-labelledby="features-title">
+        <div class="section-head">
+          <h2 class="h2 lines" id="features-title" data-reveal>
+            <span class="line"><span>Học cùng bạn,</span></span>
+            <span class="line"><span>không học thay bạn</span></span>
+          </h2>
+          <div class="section-head__aside" data-reveal>
+            <a class="btn btn-secondary btn-sm" href="#subjects">Xem các môn học</a>
+          </div>
+        </div>
+
+        <div class="features">
+          <!-- Flashcards -->
+          <article class="feature" data-reveal>
+            <div class="feature__media" aria-hidden="true">
+              <div class="fx-stack">
+                <div class="fx-stack__card"></div>
+                <div class="fx-stack__card"></div>
+                <div class="fx-stack__card">
+                  <span class="fx-stack__term">Photosynthesis</span>
+                  <span class="fx-stack__hint"><span class="kbd">Space</span> lật thẻ <span class="kbd">←</span><span class="kbd">→</span> chuyển thẻ</span>
+                </div>
+              </div>
+            </div>
+            <div class="feature__body">
+              <div>
+                <h3 class="feature__title">Flashcards</h3>
+                <p class="feature__desc">Lật thẻ, trộn thứ tự, đánh dấu thẻ đã thuộc hoặc chưa thuộc. Vuốt trên điện thoại, dùng phím tắt trên máy tính, nghe phát âm ngay trên thẻ.</p>
+              </div>
+              <a class="link-arrow" href="#subjects" data-mode-link="flashcards">Thử flashcards <span data-icon="arrow-right"></span></a>
+            </div>
+          </article>
+
+          <!-- Learn -->
+          <article class="feature" data-reveal>
+            <div class="feature__media" aria-hidden="true">
+              <div class="fx-app">
+                <div class="fx-app__bar"><span data-icon="sparkles"></span> Học thích ứng <span class="mock__pill">Vòng 2 / 4</span></div>
+                <div class="fx-app__side">
+                  <div class="fx-app__tabs"><span>Môn học</span><span>Gần đây</span></div>
+                  <div class="fx-app__node" data-icon-before="languages">Tiếng Anh</div>
+                  <div class="fx-app__node is-child is-active" data-icon-before="file">IELTS: Môi trường <em>12</em></div>
+                  <div class="fx-app__node is-child" data-icon-before="file">Phrasal verbs <em>8</em></div>
+                  <div class="fx-app__node" data-icon-before="leaf">Sinh học</div>
+                  <div class="fx-app__node is-child" data-icon-before="file">Tế bào học <em>9</em></div>
+                  <div class="fx-app__node" data-icon-before="landmark">Lịch sử</div>
+                  <div class="fx-app__node" data-icon-before="code">Lập trình</div>
+                </div>
+                <div style="overflow: hidden">
+                  <table class="fx-table">
+                    <thead><tr><th>Thuật ngữ</th><th>Định nghĩa</th><th>Trạng thái</th><th>Lần ôn</th></tr></thead>
+                    <tbody>
+                      <tr class="is-active"><td>biodiversity</td><td>đa dạng sinh học</td><td><span class="chip chip--learning">Đang học</span></td><td>Vừa xong</td></tr>
+                      <tr><td>sustainable</td><td>bền vững</td><td><span class="chip chip--mastered">Đã thuộc</span></td><td>2 phút trước</td></tr>
+                      <tr><td>deforestation</td><td>nạn phá rừng</td><td><span class="chip chip--mastered">Đã thuộc</span></td><td>3 phút trước</td></tr>
+                      <tr><td>emission</td><td>khí thải; sự phát thải</td><td><span class="chip chip--learning">Đang học</span></td><td>5 phút trước</td></tr>
+                      <tr><td>conservation</td><td>sự bảo tồn</td><td><span class="chip chip--new">Chưa học</span></td><td>—</td></tr>
+                      <tr><td>habitat</td><td>môi trường sống</td><td><span class="chip chip--new">Chưa học</span></td><td>—</td></tr>
+                      <tr><td>recycle</td><td>tái chế</td><td><span class="chip chip--new">Chưa học</span></td><td>—</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="feature__body">
+              <div>
+                <h3 class="feature__title">Học thích ứng</h3>
+                <p class="feature__desc">Bắt đầu bằng trắc nghiệm, chuyển sang tự gõ đáp án khi bạn đã quen. Thẻ trả lời sai sẽ quay lại trong cùng vòng cho đến khi bạn thật sự thuộc.</p>
+              </div>
+              <a class="link-arrow" href="#subjects" data-mode-link="learn">Bắt đầu học <span data-icon="arrow-right"></span></a>
+            </div>
+          </article>
+
+          <!-- Match -->
+          <article class="feature" data-reveal>
+            <div class="feature__media" aria-hidden="true">
+              <div class="fx-match">
+                <span class="fx-match__label">Ghép thẻ · 00:14.2</span>
+                <div class="fx-match__frame"></div>
+                <span class="fx-tile" style="--r: -14deg; left: 6%; top: 14%; width: 14%">Ti thể</span>
+                <span class="fx-tile fx-tile--dark hide-sm" style="--r: 10deg; left: 23%; top: 6%; width: 13%; animation-delay: -2s">Lục lạp</span>
+                <span class="fx-tile fx-tile--green" style="--r: -6deg; left: 13%; top: 46%; width: 18%; animation-delay: -4s">Hô hấp tế bào, tạo ATP</span>
+                <span class="fx-tile" style="--r: 8deg; left: 41%; top: 10%; width: 14%; animation-delay: -1s">Ribôxôm</span>
+                <span class="fx-tile fx-tile--dark" style="--r: -12deg; left: 38%; top: 48%; width: 18%; animation-delay: -3s">Tổng hợp prôtêin</span>
+                <span class="fx-tile fx-tile--green hide-sm" style="--r: 12deg; left: 62%; top: 8%; width: 13%; animation-delay: -5s">Quang hợp</span>
+                <span class="fx-tile" style="--r: -10deg; left: 80%; top: 24%; width: 12%; animation-delay: -2.5s">Nhân</span>
+                <span class="fx-tile fx-tile--green" style="--r: 6deg; left: 62%; top: 50%; width: 16%; animation-delay: -1.5s">Chứa ADN</span>
+              </div>
+            </div>
+            <div class="feature__body">
+              <div>
+                <h3 class="feature__title">Ghép thẻ</h3>
+                <p class="feature__desc">Ghép thuật ngữ với định nghĩa nhanh nhất có thể. Đồng hồ chạy, kỷ lục được lưu lại — cách ôn nhẹ nhàng mà vẫn hiệu quả.</p>
+              </div>
+              <a class="link-arrow" href="#subjects" data-mode-link="match">Chơi ghép thẻ <span data-icon="arrow-right"></span></a>
+            </div>
+          </article>
+
+          <!-- Test -->
+          <article class="feature" data-reveal>
+            <div class="feature__media" aria-hidden="true">
+              <div class="fx-test">
+                <div class="fx-browser">
+                  <div class="fx-browser__bar"><span data-icon="clipboard"></span> Kiểm tra · Tế bào học · 10 câu</div>
+                  <div class="fx-browser__nav"><b>Recall</b><span>Trắc nghiệm · Đúng/Sai · Tự luận</span></div>
+                  <div class="fx-browser__body">
+                    <span class="eyebrow">Câu 4 / 10</span>
+                    <p class="fx-browser__q">Bào quan nào thực hiện quang hợp ở tế bào thực vật?</p>
+                    <div class="fx-browser__opts">
+                      <div class="fx-opt"><small>A</small>Ti thể</div>
+                      <div class="fx-opt is-selected"><small>B</small>Lục lạp</div>
+                      <div class="fx-opt"><small>C</small>Bộ máy Gôngi</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="feature__body">
+              <div>
+                <h3 class="feature__title">Kiểm tra</h3>
+                <p class="feature__desc">Tự tạo đề với số câu và dạng câu bạn muốn: trắc nghiệm, đúng/sai, tự luận ngắn. Chấm điểm tức thì, xem lại câu sai và ôn lại đúng những thẻ đó.</p>
+              </div>
+              <a class="link-arrow" href="#subjects" data-mode-link="test">Làm bài kiểm tra <span data-icon="arrow-right"></span></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===== Nền tảng đầy đủ (bento) ===== -->
+      <section class="section container" id="platform" aria-labelledby="platform-title">
+        <div class="section-head">
+          <h2 class="h2 lines" id="platform-title" data-reveal>
+            <span class="line"><span>Không chỉ là thẻ nhớ,</span></span>
+            <span class="line"><span>một nền tảng ôn tập</span></span>
+          </h2>
+        </div>
+
+        <div class="bento">
+          <div class="bento__cell" data-reveal>
+            <div class="bento__visual">
+              <div class="panel">
+                <div class="panel__head">Tiến độ theo môn <span class="panel__ok">Tuần này</span></div>
+                <div class="bar-row"><div class="bar-row__top"><span>Tiếng Anh</span><b>72%</b></div><div class="bar"><i style="width: 72%"></i></div></div>
+                <div class="bar-row"><div class="bar-row__top"><span>Sinh học</span><b>45%</b></div><div class="bar"><i style="width: 45%"></i></div></div>
+                <div class="bar-row"><div class="bar-row__top"><span>Lịch sử</span><b>18%</b></div><div class="bar"><i style="width: 18%"></i></div></div>
+              </div>
+            </div>
+            <span class="bento__label">Tiến độ <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc">Biết chính xác mỗi môn còn bao nhiêu thẻ chưa thuộc.</p>
+          </div>
+
+          <div class="bento__cell" data-reveal style="--delay: 80ms">
+            <div class="bento__visual">
+              <div class="panel">
+                <div class="panel__head"><span>Thư viện</span><span data-icon="plus"></span></div>
+                <div class="tree__row" data-icon-before="folder">Tiếng Anh <em>2</em></div>
+                <div class="tree__row is-child" data-icon-before="file">IELTS: Môi trường <em>12</em></div>
+                <div class="tree__row is-child is-active" data-icon-before="file">Phrasal verbs <em>8</em></div>
+                <div class="tree__row" data-icon-before="folder">Sinh học <em>1</em></div>
+                <div class="tree__row" data-icon-before="folder">Lịch sử <em>1</em></div>
+                <div class="tree__row" data-icon-before="folder">Hóa học <em>1</em></div>
+              </div>
+            </div>
+            <span class="bento__label">Thư viện <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc">Sắp xếp theo môn học và học phần, tìm lại bất kỳ thẻ nào trong vài giây.</p>
+          </div>
+
+          <div class="bento__cell" data-reveal>
+            <div class="bento__visual">
+              <div class="panel">
+                <div class="panel__head">Nhập nhanh <span class="mock__pill">Tự nhận dạng</span></div>
+                <div class="panel__field"><span>Dấu phân cách</span><div class="panel__input">Tab, " - ", ":" hoặc ","</div></div>
+                <div class="panel__field"><span>Nội dung</span><div class="panel__input">mitochondria	ti thể
+chloroplast	lục lạp
+ribosome	ribôxôm</div></div>
+              </div>
+            </div>
+            <span class="bento__label">Nhập nhanh <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc">Dán danh sách từ Excel, Google Sheets hay Ghi chú — mỗi dòng thành một thẻ.</p>
+          </div>
+
+          <div class="bento__cell" data-reveal style="--delay: 80ms">
+            <div class="bento__visual">
+              <div class="panel">
+                <div class="panel__head">Phát âm <span data-icon="volume"></span></div>
+                <div class="lang-row is-active" data-icon-before="volume"><b>English</b><span>en-US</span><em>Tự động</em></div>
+                <div class="lang-row" data-icon-before="volume"><b>Tiếng Việt</b><span>vi-VN</span><em>Tự động</em></div>
+                <div class="lang-row" data-icon-before="volume"><b>Tốc độ</b><span>0.95×</span><em></em></div>
+              </div>
+            </div>
+            <span class="bento__label">Phát âm <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc">Nghe thuật ngữ được đọc to, tự nhận biết tiếng Anh hay tiếng Việt.</p>
+          </div>
+
+          <div class="bento__cell" data-reveal>
+            <div class="bento__visual">
+              <div class="big-stat"><div><b>100%</b><span>ngoại tuyến</span></div></div>
+            </div>
+            <span class="bento__label">Lưu trên thiết bị <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc">Không cần tài khoản, không cần mạng. Xuất và nhập bản sao lưu bất cứ lúc nào.</p>
+          </div>
+
+          <div class="bento__cell bento__cell--tall" data-reveal style="--delay: 80ms">
+            <div class="bento__visual">
+              <div class="score-chart panel">
+                <div class="panel__head"><span>Kết quả kiểm tra</span></div>
+                <div class="score-chart__num">86%</div>
+                <div class="score-chart__area"></div>
+                <div class="score-row"><span>Bài</span><span>Điểm</span><span>Câu sai</span></div>
+                <div class="score-row"><b>Tế bào học · lần 3</b><span>92%</span><span>1</span></div>
+                <div class="score-row"><b class="v">Tế bào học · lần 2</b><span>78%</span><span>2</span></div>
+                <div class="score-row"><b class="v">Tế bào học · lần 1</b><span>56%</span><span>4</span></div>
+              </div>
+            </div>
+            <span class="bento__label">Kết quả kiểm tra <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc">Lịch sử điểm từng lần làm bài để thấy rõ mình tiến bộ đến đâu.</p>
+          </div>
+
+          <div class="bento__cell bento__cell--short" data-reveal>
+            <div class="bento__visual">
+              <div class="keys">
+                <span class="keys__item"><span class="kbd">Space</span> Lật thẻ</span>
+                <span class="keys__sep"></span>
+                <span class="keys__item"><span class="kbd">←</span><span class="kbd">→</span> Chuyển thẻ</span>
+                <span class="keys__sep"></span>
+                <span class="keys__item"><span class="kbd">1–4</span> Chọn đáp án</span>
+              </div>
+            </div>
+            <span class="bento__label">Phím tắt <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc">Ôn cả trăm thẻ mà không cần chạm chuột.</p>
+          </div>
+
+          <div class="bento__cell bento__cell--wide" data-reveal>
+            <div class="bento__visual">
+              <svg class="chart" id="activity-chart" viewBox="0 0 1000 260" preserveAspectRatio="none" role="img" aria-label="Biểu đồ số thẻ đã ôn trong 14 ngày qua"></svg>
+            </div>
+            <span class="bento__label">Thống kê <span data-icon="arrow-up-right"></span></span>
+            <p class="bento__desc" id="activity-desc">Số lượt ôn mỗi ngày trong 14 ngày gần nhất.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Môn học của bạn ===== -->
+      <section class="section container" id="subjects" aria-labelledby="subjects-title">
+        <div class="section-head">
+          <h2 class="h2 lines" id="subjects-title" data-reveal>
+            <span class="line"><span>Môn học của bạn</span></span>
+          </h2>
+          <div class="section-head__aside toolbar" data-reveal>
+            <label class="search">
+              <span class="sr-only">Tìm môn học</span>
+              <span data-icon="search"></span>
+              <input class="input" id="subject-search" type="search" placeholder="Tìm môn học…" autocomplete="off" />
+            </label>
+            <button class="btn btn-secondary" type="button" data-action="new-subject"><span data-icon="plus"></span>Thêm môn</button>
+          </div>
+        </div>
+        <div id="subject-grid"></div>
+      </section>
+
+      <!-- ===== Phương pháp ===== -->
+      <section class="section container" id="methods" aria-labelledby="methods-title">
+        <div class="section-head">
+          <h2 class="h2 lines" id="methods-title" data-reveal>
+            <span class="line"><span>Dựa trên những phương pháp</span></span>
+            <span class="line"><span>ghi nhớ đã được kiểm chứng</span></span>
+          </h2>
+          <div class="section-head__aside" data-reveal>
+            <a class="btn btn-secondary btn-sm" href="#subjects">Bắt đầu học</a>
+          </div>
+        </div>
+
+        <div class="methods" data-stagger="90">
+          <article class="method">
+            <span class="method__num">01</span>
+            <div class="method__visual" aria-hidden="true">
+              <div class="recall-q">
+                <div class="recall-q__card">Ti thể</div>
+                <div class="recall-q__input"><span>Hô hấp tế bào, tạo ATP</span><i></i></div>
+              </div>
+            </div>
+            <h3>Chủ động nhớ lại</h3>
+            <p>Tự trả lời trước khi xem đáp án. Mỗi lần cố gắng nhớ lại là một lần củng cố trí nhớ — hiệu quả hơn nhiều so với đọc đi đọc lại.</p>
+          </article>
+          <article class="method">
+            <span class="method__num">02</span>
+            <div class="method__visual" aria-hidden="true">
+              <div class="boxes">
+                <span style="height: 40px">0</span>
+                <span style="height: 64px">1</span>
+                <span style="height: 92px">2</span>
+                <span style="height: 124px">3</span>
+              </div>
+            </div>
+            <h3>Lặp lại ngắt quãng</h3>
+            <p>Hệ thống hộp Leitner đưa thẻ khó quay lại thường xuyên hơn, thẻ đã thuộc thì giãn ra — bạn dành thời gian cho đúng chỗ cần ôn.</p>
+          </article>
+          <article class="method">
+            <span class="method__num">03</span>
+            <div class="method__visual" aria-hidden="true">
+              <svg class="ring" viewBox="0 0 132 132">
+                <circle class="ring__track" cx="66" cy="66" r="56" />
+                <circle class="ring__value" cx="66" cy="66" r="56" stroke-dasharray="351.86" stroke-dashoffset="49" />
+                <text x="66" y="75" text-anchor="middle">86%</text>
+              </svg>
+            </div>
+            <h3>Tự kiểm tra</h3>
+            <p>Làm bài kiểm tra trước ngày thi để biết mình đang ở đâu. Câu sai được gom lại để bạn ôn tiếp ngay lập tức.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===== Nhập nhanh ===== -->
+      <section class="section container" id="import" aria-labelledby="import-title">
+        <div class="section-head">
+          <h2 class="h2 lines" id="import-title" data-reveal>
+            <span class="line"><span>Nhập hàng trăm thẻ</span></span>
+            <span class="line"><span>chỉ trong vài giây</span></span>
+          </h2>
+          <div class="section-head__aside" data-reveal>
+            <span class="muted" style="font-size: 13px">Dán từ Excel, Sheets hoặc Ghi chú</span>
+            <button class="btn btn-secondary btn-sm" type="button" data-action="import-save">Lưu thành học phần</button>
+          </div>
+        </div>
+
+        <div class="import-demo" data-reveal>
+          <div class="import-demo__col">
+            <div class="import-demo__head">
+              <label for="import-text">Mỗi dòng một thẻ: thuật ngữ, dấu phân cách, định nghĩa</label>
+            </div>
+            <textarea class="textarea" id="import-text" spellcheck="false">photosynthesis	quang hợp
+mitochondria	ti thể
+chloroplast	lục lạp
+ribosome	ribôxôm
+nucleus	nhân tế bào
+cell membrane	màng sinh chất
+enzyme	enzim
+osmosis	sự thẩm thấu</textarea>
+          </div>
+          <div class="import-demo__col">
+            <div class="import-demo__head">
+              <span>Xem trước</span>
+              <span id="import-count" class="mock__pill">0 thẻ</span>
+            </div>
+            <div class="preview-list" id="import-preview" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== CTA ===== -->
+      <section class="section container cta" aria-labelledby="cta-title">
+        <h2 class="h2 lines" id="cta-title" data-reveal>
+          <span class="line"><span>Buổi ôn tập tiếp theo bắt đầu từ đây</span></span>
+        </h2>
+        <form class="prompt" id="cta-form" data-reveal>
+          <label class="sr-only" for="cta-input">Tên môn học muốn ôn</label>
+          <textarea id="cta-input" maxlength="60" placeholder="Bạn muốn ôn môn gì? Ví dụ: Từ vựng IELTS, Vật lý 12, Lịch sử thế giới…"></textarea>
+          <div class="prompt__bar">
+            <span>Tạo môn học mới</span>
+            <button class="prompt__send" type="submit" aria-label="Tạo môn học" disabled><span data-icon="arrow-up"></span></button>
+          </div>
+        </form>
+        <div class="suggestions" data-stagger>
+          <button class="suggestion" type="button">Từ vựng IELTS</button>
+          <button class="suggestion" type="button">Công thức Vật lý 12</button>
+          <button class="suggestion" type="button">Lịch sử thế giới</button>
+          <button class="suggestion" type="button">Thuật ngữ Kinh tế vi mô</button>
+        </div>
+        <p data-reveal style="margin-top: 32px"><a class="link-arrow" href="#subjects">Xem tất cả môn học <span data-icon="arrow-right"></span></a></p>
+      </section>
+    </main>
+
+    <footer data-footer></footer>
+
+    <script src="assets/js/icons.js"></script>
+    <script src="assets/js/study.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/pages/home.js"></script>
+  </body>
+</html>

@@ -164,17 +164,37 @@
 
   // Bộ thẻ có sẵn (assets/data/*.js) được thêm đúng một lần cho mỗi người dùng;
   // ghi id vào prefs.installedPacks để môn đã bị xóa không tự xuất hiện lại.
+  // Gói có "extends" nối học phần vào môn của gói gốc thay vì tạo môn mới.
   function installPacks(s) {
     const packs = (window.App && App.PACKS) || [];
     const installed = (s.prefs.installedPacks = s.prefs.installedPacks || []);
+    const packSubjects = (s.prefs.packSubjects = s.prefs.packSubjects || {});
     let changed = false;
-    packs.forEach((pack, pi) => {
+    // Mốc thời gian tăng dần qua mọi gói để học phần của gói sau luôn xếp sau, không trùng createdAt.
+    let tick = Date.now();
+    packs.forEach((pack) => {
       if (installed.includes(pack.id)) return;
-      const now = Date.now() + pi;
-      const subject = { id: uid(), ...pack.subject, createdAt: now, updatedAt: now };
-      s.subjects.push(subject);
-      pack.sets.forEach((set, ti) => {
-        const studySet = { id: uid(), subjectId: subject.id, title: set.title, description: set.description || "", createdAt: now + ti, updatedAt: now + ti };
+      const now = tick++;
+      let subject = null;
+      if (pack.extends) {
+        // Gói cài trước khi có packSubjects thì tìm môn theo tên.
+        subject = s.subjects.find((x) => x.id === packSubjects[pack.extends]) || s.subjects.find((x) => x.name === pack.subject.name);
+        // Người dùng đã xóa môn gốc: tôn trọng, không tạo lại.
+        if (!subject && installed.includes(pack.extends)) {
+          installed.push(pack.id);
+          changed = true;
+          return;
+        }
+        if (subject) subject.updatedAt = now;
+      }
+      if (!subject) {
+        subject = { id: uid(), ...pack.subject, createdAt: now, updatedAt: now };
+        s.subjects.push(subject);
+      }
+      packSubjects[pack.id] = subject.id;
+      pack.sets.forEach((set) => {
+        const at = tick++;
+        const studySet = { id: uid(), subjectId: subject.id, title: set.title, description: set.description || "", createdAt: at, updatedAt: at };
         s.sets.push(studySet);
         set.cards.forEach(([term, definition], order) => s.cards.push({ id: uid(), setId: studySet.id, term, definition, order }));
       });

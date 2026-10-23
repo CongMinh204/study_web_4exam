@@ -110,7 +110,8 @@
       // Giữ nguyên thứ tự A–D của thẻ trắc nghiệm vì có phương án kiểu "Cả a, b và c"
       current.choices = quiz ? quiz.options.map((o) => o.text) : study.buildChoices(card, all, answerField, 4);
       current.correct = quiz ? quiz.answer.text : card[answerField];
-      const keys = quiz ? quiz.options.map((o) => o.key) : current.choices.map((_, i) => i + 1);
+      // Nhãn phương án luôn là 1–4 để khớp phím tắt; chữ cái trong thẻ chỉ dùng để chấm.
+      const keys = current.choices.map((_, i) => i + 1);
       body = `
         <div class="question__ask">${quiz ? "Chọn đáp án đúng" : `Chọn ${label[answerField].toLowerCase()} đúng`}</div>
         <div class="options">${current.choices

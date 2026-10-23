@@ -146,7 +146,7 @@
     if (q.type === "mc") {
       body = `<div class="question__ask">Chọn ${answerLabel.toLowerCase()} đúng</div>
         <div class="options">${q.choices
-          .map((c, k) => `<button class="option" type="button" data-value="${esc(c)}" aria-pressed="false"><span class="option__key">${"ABCD"[k]}</span><span class="option__text">${esc(c)}</span></button>`)
+          .map((c, k) => `<button class="option" type="button" data-value="${esc(c)}" aria-pressed="false"><span class="option__key">${k + 1}</span><span class="option__text">${esc(c)}</span></button>`)
           .join("")}</div>`;
     } else if (q.type === "tf") {
       body = `<div class="tf__pair"><small>${answerLabel}</small><div>${esc(q.shown)}</div></div>

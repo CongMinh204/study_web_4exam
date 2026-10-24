@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const SUBJECT = { name: "MLN111 FE retake", description: "MLN111 · Đề FE retake SU26 (C2FE, RE) theo chương", icon: "brain", color: "#f59e0b" };
+const SUBJECT = { name: "MLN111 FE retake", description: "MLN111 · Đề FE retake SU26 (C2FE, RE, C1FE) theo chương", icon: "brain", color: "#f59e0b" };
 
 const CHAPTER_TITLES = {
   1: "Khái luận về triết học và triết học Mác–Lênin",
@@ -15,9 +15,11 @@ const CHAPTER_TITLES = {
 
 // Mỗi đề là một gói riêng. Đề thêm sau dùng "extends" để nối học phần vào môn của gói đầu,
 // vì gói đầu đã được cài cho người dùng cũ và không cài lại.
+// withFull: học phần tổng hợp nằm ngay trong gói của đề (đề C2FE, RE có tổng hợp ở gói riêng, thêm sau).
 const EXAMS = [
   { id: "mln111-retake-v1", file: "MLN111_SU26_C2FE.md", code: "C2FE", prefix: "" },
   { id: "mln111-retake-re-v1", file: "MLN111_SU26_RE.md", code: "RE", prefix: "Đề RE · ", extends: "mln111-retake-v1" },
+  { id: "mln111-retake-c1fe-v1", file: "MLN111_SU26_C1FE.md", code: "C1FE", prefix: "Đề C1FE · ", extends: "mln111-retake-v1", withFull: true },
 ];
 
 function parseExam({ file, code, prefix }) {
@@ -67,26 +69,30 @@ function parseExam({ file, code, prefix }) {
 
 const parsed = EXAMS.map((exam) => ({ exam, sets: parseExam(exam) }));
 
-const packs = parsed.map(({ exam, sets }) => {
+// Học phần tổng hợp: cả đề theo đúng thứ tự câu gốc (trong học phần theo chương, các câu cuối đề nằm rải ở các chương).
+const questionNo = ([front]) => Number(front.match(/^Câu (\d+)\./)[1]);
+const fullSet = ({ exam, sets }) => {
+  const cards = sets.flatMap((s) => s.cards).sort((a, b) => questionNo(a) - questionNo(b));
+  console.log(`${exam.code} tổng hợp: ${cards.length} câu`);
+  return {
+    title: `Đề ${exam.code} · Tổng hợp ${cards.length} câu`,
+    description: `Cả đề MLN111 SU26 ${exam.code}, câu 1–${cards.length} không chia chương · đáp án theo bình luận diễn đàn, không phải đáp án chính thức.`,
+    cards,
+  };
+};
+
+const packs = parsed.map((entry) => {
+  const { exam, sets } = entry;
   console.log(`${exam.code}: ${sets.map((s) => s.cards.length).join(" + ")} = ${sets.reduce((n, s) => n + s.cards.length, 0)} câu`);
-  return { id: exam.id, ...(exam.extends && { extends: exam.extends }), subject: SUBJECT, sets };
+  return { id: exam.id, ...(exam.extends && { extends: exam.extends }), subject: SUBJECT, sets: exam.withFull ? [...sets, fullSet(entry)] : sets };
 });
 
-// Học phần tổng hợp: cả đề theo đúng thứ tự câu gốc (trong học phần theo chương, câu 58 nằm ở Chương 2).
-const questionNo = ([front]) => Number(front.match(/^Câu (\d+)\./)[1]);
-packs.push({
+// Giữ nguyên vị trí gói tổng hợp C2FE + RE (ngay sau 2 đề đó) như khi đã phát hành.
+packs.splice(2, 0, {
   id: "mln111-retake-full-v1",
   extends: "mln111-retake-v1",
   subject: SUBJECT,
-  sets: parsed.map(({ exam, sets }) => {
-    const cards = sets.flatMap((s) => s.cards).sort((a, b) => questionNo(a) - questionNo(b));
-    console.log(`${exam.code} tổng hợp: ${cards.length} câu`);
-    return {
-      title: `Đề ${exam.code} · Tổng hợp ${cards.length} câu`,
-      description: `Cả đề MLN111 SU26 ${exam.code}, câu 1–${cards.length} không chia chương · đáp án theo bình luận diễn đàn, không phải đáp án chính thức.`,
-      cards,
-    };
-  }),
+  sets: parsed.filter(({ exam }) => !exam.withFull).map(fullSet),
 });
 
 const out = `// Bộ thẻ có sẵn: MLN111 FE retake, sinh từ scripts/src/MLN111_SU26_*.md bằng scripts/gen-mln111-retake.mjs.
@@ -96,3 +102,6 @@ ${packs.map((p) => JSON.stringify(p, null, 1)).join(",\n")}
 );
 `;
 writeFileSync(join(root, "assets/data/mln111-retake.js"), out);
+
+// Đổi URL file dữ liệu trong các trang để trình duyệt không dùng bản cũ trong cache.
+await import("./version-assets.mjs");

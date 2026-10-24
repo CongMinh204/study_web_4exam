@@ -65,10 +65,28 @@ function parseExam({ file, code, prefix }) {
   return chapters;
 }
 
-const packs = EXAMS.map((exam) => {
-  const sets = parseExam(exam);
+const parsed = EXAMS.map((exam) => ({ exam, sets: parseExam(exam) }));
+
+const packs = parsed.map(({ exam, sets }) => {
   console.log(`${exam.code}: ${sets.map((s) => s.cards.length).join(" + ")} = ${sets.reduce((n, s) => n + s.cards.length, 0)} câu`);
   return { id: exam.id, ...(exam.extends && { extends: exam.extends }), subject: SUBJECT, sets };
+});
+
+// Học phần tổng hợp: cả đề theo đúng thứ tự câu gốc (trong học phần theo chương, câu 58 nằm ở Chương 2).
+const questionNo = ([front]) => Number(front.match(/^Câu (\d+)\./)[1]);
+packs.push({
+  id: "mln111-retake-full-v1",
+  extends: "mln111-retake-v1",
+  subject: SUBJECT,
+  sets: parsed.map(({ exam, sets }) => {
+    const cards = sets.flatMap((s) => s.cards).sort((a, b) => questionNo(a) - questionNo(b));
+    console.log(`${exam.code} tổng hợp: ${cards.length} câu`);
+    return {
+      title: `Đề ${exam.code} · Tổng hợp ${cards.length} câu`,
+      description: `Cả đề MLN111 SU26 ${exam.code}, câu 1–${cards.length} không chia chương · đáp án theo bình luận diễn đàn, không phải đáp án chính thức.`,
+      cards,
+    };
+  }),
 });
 
 const out = `// Bộ thẻ có sẵn: MLN111 FE retake, sinh từ scripts/src/MLN111_SU26_*.md bằng scripts/gen-mln111-retake.mjs.

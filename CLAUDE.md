@@ -92,7 +92,10 @@ npm run dev                       # dev server tĩnh: http://localhost:3000
 npm test                          # unit test logic học tập (tests/*.test.mjs)
 npm run screenshot -- <đường-dẫn> # chụp desktop + mobile (cần dev server đang chạy)
 npm run smoke                     # chạy thử end-to-end mọi luồng chính trên desktop + mobile
+npm run assets:version            # gắn ?v=<hash> cho JS/CSS trong mọi trang .html
 ```
+
+Sau khi sửa bất kỳ file nào trong `assets/`, chạy `npm run assets:version` trước khi commit: hosting tĩnh cho trình duyệt giữ file cũ tới 10 phút, nên URL phải đổi khi nội dung đổi.
 
 Trước khi báo hoàn thành một tính năng: chạy `npm test` và `npm run smoke` (cần dev server), đảm bảo không lỗi, rồi chụp screenshot theo quy tắc 1.
 

@@ -185,7 +185,7 @@ type TestResult = {
 - **Trắc nghiệm**: 4 phương án, đáp án nhiễu lấy ngẫu nhiên từ định nghĩa khác trong cùng học phần. Học phần < 4 thẻ thì giảm số phương án tương ứng.
 - **So khớp đáp án tự gõ**: bỏ qua hoa/thường, khoảng trắng thừa và dấu câu cuối; có tùy chọn bỏ qua dấu tiếng Việt. Đáp án ghi nhiều phương án cách nhau bởi `;` hoặc `/` thì khớp một phương án là đúng. Sai 1–2 ký tự được báo "Gần đúng" (vẫn tính sai).
 - Cho phép chọn hướng hỏi: thuật ngữ → định nghĩa, định nghĩa → thuật ngữ, hoặc cả hai.
-- **Thẻ trắc nghiệm** (`study.parseQuiz`): mặt trước là câu hỏi rồi các dòng `A. …`–`D. …`, mặt sau bắt đầu bằng chữ cái đáp án (`C. …`). Flashcards hiện câu hỏi + danh sách phương án; Học luôn hỏi trắc nghiệm bằng chính các phương án (không trộn thứ tự vì có phương án kiểu "Cả a, b và c"); Kiểm tra dùng phương án gốc và chấm tự luận nhận cả chữ cái lẫn nội dung; Ghép thẻ ghép câu hỏi với nội dung đáp án.
+- **Thẻ trắc nghiệm** (`study.parseQuiz`): mặt trước là câu hỏi rồi các dòng `A. …`–`D. …`, mặt sau bắt đầu bằng chữ cái đáp án (`C. …`). Flashcards hiện câu hỏi + danh sách phương án; Học luôn hỏi trắc nghiệm bằng chính các phương án (không trộn thứ tự vì có phương án kiểu "Cả a, b và c"); Kiểm tra dùng phương án gốc và chấm tự luận nhận cả chữ cái lẫn nội dung; Ghép thẻ ghép câu hỏi với nội dung đáp án. **Câu chọn nhiều đáp án**: mặt sau ghi mỗi đáp án một dòng (`A. …\nC. …`); Học và Kiểm tra cho bật/tắt nhiều phương án rồi bấm Xác nhận (Enter), chấm đúng khi chọn đủ và đúng tập đáp án; tự luận gõ các chữ cái ("A, C, D"). Ghi chú nằm sau dòng trống (`Ghi chú: …`) và không bị coi là đáp án.
 - Trộn ngẫu nhiên dùng Fisher–Yates; nhận `seed`/random fn làm tham số để test được.
 
 ## Design system

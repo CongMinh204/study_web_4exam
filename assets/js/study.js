@@ -48,7 +48,8 @@
   }
 
   // Thẻ trắc nghiệm: mặt trước là câu hỏi rồi các dòng "A. …", "B. …"; mặt sau bắt đầu bằng chữ cái đáp án.
-  // Trả về null nếu thẻ không theo dạng này.
+  // Câu chọn nhiều đáp án ghi mỗi đáp án một dòng ở mặt sau; phần sau dòng trống (ghi chú) bị bỏ qua.
+  // Trả về null nếu thẻ không theo dạng này. `answer` là đáp án đầu tiên, `answers` là tất cả đáp án đúng.
   function parseQuiz(card) {
     const question = [];
     const options = [];
@@ -57,11 +58,29 @@
       if (m) options.push({ key: m[1], text: m[2].trim() });
       else if (!options.length) question.push(line);
     }
-    const am = String(card.definition || "").trim().match(/^([A-F])[.)](\s|$)/);
-    const answer = am && options.find((o) => o.key === am[1]);
-    if (options.length < 2 || !answer) return null;
-    return { question: question.join("\n").trim(), options, answer };
+    const answers = [];
+    for (const line of String(card.definition || "").trim().split(/\r?\n/)) {
+      const am = line.trim().match(/^([A-F])[.)](\s|$)/);
+      if (!am) break;
+      const opt = options.find((o) => o.key === am[1]);
+      if (!opt) return null;
+      if (!answers.includes(opt)) answers.push(opt);
+    }
+    if (options.length < 2 || !answers.length) return null;
+    return { question: question.join("\n").trim(), options, answer: answers[0], answers, multi: answers.length > 1 };
   }
+
+  // Câu chọn nhiều đáp án lưu lựa chọn của người dùng dạng JSON mảng nội dung phương án.
+  function selectionOf(given) {
+    try {
+      const v = JSON.parse(given);
+      return Array.isArray(v) ? v.map(String) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
 
   // Đáp án có thể ghi nhiều phương án cách nhau bởi "/" hoặc ";" — khớp một phương án là đúng.
   // Đáp án dạng "C. nội dung" chấp nhận cả chữ cái "C" lẫn phần nội dung.
@@ -161,25 +180,38 @@
 
   // Thẻ trắc nghiệm luôn hỏi câu hỏi gốc. Phương án giữ nguyên thứ tự vì có phương án kiểu "Cả a, b và c".
   function quizQuestion(card, quiz, type, i, rand) {
-    const q = { id: `q${i + 1}`, cardId: card.id, type, ask: "term", quiz: true, prompt: card.term, answer: card.definition };
+    // Đáp án hiển thị lấy từ phương án đã tách, không lấy nguyên mặt sau để không lẫn ghi chú.
+    const keys = quiz.answers.map((o) => o.key);
+    const q = { id: `q${i + 1}`, cardId: card.id, type, ask: "term", quiz: true, prompt: card.term, answer: quiz.answers.map((o) => `${o.key}. ${o.text}`).join("; ") };
+    if (quiz.multi) {
+      q.multi = true;
+      q.answerKeys = keys;
+    }
     if (type === "mc") {
       q.prompt = quiz.question;
       q.choices = quiz.options.map((o) => o.text);
-      q.answer = quiz.answer.text;
+      q.answer = quiz.answers.map((o) => o.text).join("; ");
+      if (quiz.multi) q.answers = quiz.answers.map((o) => o.text);
     }
     if (type === "tf") {
-      const wrong = quiz.options.filter((o) => o.key !== quiz.answer.key);
-      const pick = rand() < 0.5 || !wrong.length ? quiz.answer : wrong[Math.floor(rand() * wrong.length)];
+      const wrong = quiz.options.filter((o) => !keys.includes(o.key));
+      const wantTrue = rand() < 0.5 || !wrong.length;
+      const pick = wantTrue ? (quiz.multi ? quiz.answers[Math.floor(rand() * quiz.answers.length)] : quiz.answer) : wrong[Math.floor(rand() * wrong.length)];
       q.shown = `${pick.key}. ${pick.text}`;
-      q.isTrue = pick.key === quiz.answer.key;
+      q.isTrue = keys.includes(pick.key);
     }
     return q;
   }
 
   function gradeQuestion(q, given, opts) {
     if (given == null || given === "") return false;
-    if (q.type === "mc") return given === q.answer;
+    if (q.type === "mc") return q.multi ? sameSet(selectionOf(given), q.answers) : given === q.answer;
     if (q.type === "tf") return (given === "true") === q.isTrue;
+    if (q.multi) {
+      // Câu chọn nhiều đáp án gõ bằng các chữ cái, ví dụ "A, C, D" hoặc "acd"
+      const letters = String(given).replace(/[\s,;&+]+/g, "").toUpperCase();
+      return /^[A-F]+$/.test(letters) && sameSet([...new Set(letters)], q.answerKeys);
+    }
     return checkAnswer(given, q.answer, opts).correct;
   }
 
@@ -210,6 +242,7 @@
     levenshtein,
     checkAnswer,
     parseQuiz,
+    selectionOf,
     buildChoices,
     nextBox,
     masteryOf,

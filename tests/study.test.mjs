@@ -135,6 +135,49 @@ test("buildTest với thẻ trắc nghiệm dùng chính các phương án, gi�
   assert.equal(tf.isTrue, tf.shown.startsWith("C."));
 });
 
+const multiCard = {
+  id: "m",
+  term: "Câu 55. Mục đích là gì? (chọn ba đáp án)\n\nA. Giàu có\nB. Vị thế kinh tế\nC. Cơ sở khoa học\nD. Phát triển toàn diện",
+  definition: "A. Giàu có\nC. Cơ sở khoa học\nD. Phát triển toàn diện\n\nGhi chú: theo bình luận.",
+};
+
+test("parseQuiz đọc nhiều đáp án đúng và bỏ qua ghi chú", () => {
+  const q = study.parseQuiz(multiCard);
+  assert.equal(q.multi, true);
+  assert.deepEqual(q.answers.map((o) => o.key), ["A", "C", "D"]);
+  assert.equal(q.answer.key, "A");
+  assert.equal(study.parseQuiz(quizCard).multi, false);
+  // Ghi chú sau dòng trống không làm hỏng câu một đáp án
+  assert.equal(study.parseQuiz({ ...quizCard, definition: "C. Do nhu cầu của thực tiễn.\n\nGhi chú: x" }).answers.length, 1);
+  assert.equal(study.parseQuiz({ ...multiCard, definition: "A. Giàu có\nE. không có" }), null);
+});
+
+test("câu chọn nhiều đáp án: trắc nghiệm chấm theo tập đáp án, không phụ thuộc thứ tự", () => {
+  const [mc] = study.buildTest([multiCard, { ...multiCard, id: "m2" }], { count: 1, types: ["mc"] }, seeded(2));
+  assert.equal(mc.multi, true);
+  assert.deepEqual(mc.answers, ["Giàu có", "Cơ sở khoa học", "Phát triển toàn diện"]);
+  const pick = (...xs) => JSON.stringify(xs);
+  assert.equal(study.gradeQuestion(mc, pick("Phát triển toàn diện", "Giàu có", "Cơ sở khoa học")), true);
+  assert.equal(study.gradeQuestion(mc, pick("Giàu có", "Cơ sở khoa học")), false);
+  assert.equal(study.gradeQuestion(mc, pick("Giàu có", "Cơ sở khoa học", "Phát triển toàn diện", "Vị thế kinh tế")), false);
+  assert.equal(study.gradeQuestion(mc, "Giàu có"), false);
+  assert.deepEqual(study.selectionOf(pick("a", "b")), ["a", "b"]);
+  assert.deepEqual(study.selectionOf("không phải JSON"), []);
+});
+
+test("câu chọn nhiều đáp án: tự luận gõ các chữ cái, đúng/sai theo từng đáp án", () => {
+  const [w] = study.buildTest([multiCard, { ...multiCard, id: "m2" }], { count: 1, types: ["written"] }, seeded(2));
+  assert.equal(study.gradeQuestion(w, "A, C, D"), true);
+  assert.equal(study.gradeQuestion(w, "dca"), true);
+  assert.equal(study.gradeQuestion(w, "A, C"), false);
+  assert.equal(study.gradeQuestion(w, "A, B, C, D"), false);
+  assert.equal(study.gradeQuestion(w, "Giàu có"), false);
+  for (let s = 1; s <= 12; s++) {
+    const [tf] = study.buildTest([multiCard, { ...multiCard, id: "m2" }], { count: 1, types: ["tf"] }, seeded(s));
+    assert.equal(tf.isTrue, ["A.", "C.", "D."].some((k) => tf.shown.startsWith(k)));
+  }
+});
+
 test("formatDuration", () => {
   assert.equal(study.formatDuration(12345), "12.3s");
   assert.equal(study.formatDuration(83400), "1:23.4");

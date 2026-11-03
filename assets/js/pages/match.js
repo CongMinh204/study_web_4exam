@@ -59,7 +59,8 @@
   function pairOf(c) {
     const quiz = study.parseQuiz(c);
     if (!quiz) return { term: c.term, definition: c.definition, vague: false };
-    return { term: quiz.question, definition: quiz.answer.text, vague: VAGUE.test(quiz.answer.text) };
+    const text = quiz.answers.map((a) => a.text).join("; ");
+    return { term: quiz.question, definition: text, vague: VAGUE.test(text) };
   }
 
   function play() {

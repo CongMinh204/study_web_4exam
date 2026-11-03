@@ -110,11 +110,20 @@
       const q = questions.find((x) => x.id === el.dataset.q);
       el.querySelectorAll("[data-value]").forEach((b) =>
         b.addEventListener("click", () => {
-          answers[q.id] = b.dataset.value;
-          el.querySelectorAll("[data-value]").forEach((x) => {
-            x.classList.toggle("is-selected", x === b);
-            x.setAttribute("aria-pressed", String(x === b));
-          });
+          if (q.multi && q.type === "mc") {
+            // Chọn nhiều đáp án: bật/tắt từng phương án, lưu mảng nội dung dạng JSON
+            const on = !b.classList.contains("is-selected");
+            b.classList.toggle("is-selected", on);
+            b.setAttribute("aria-pressed", String(on));
+            const picked = [...el.querySelectorAll("[data-value].is-selected")].map((x) => x.dataset.value);
+            answers[q.id] = picked.length ? JSON.stringify(picked) : "";
+          } else {
+            answers[q.id] = b.dataset.value;
+            el.querySelectorAll("[data-value]").forEach((x) => {
+              x.classList.toggle("is-selected", x === b);
+              x.setAttribute("aria-pressed", String(x === b));
+            });
+          }
           updateProgress();
         })
       );
@@ -144,7 +153,7 @@
     const answerLabel = q.quiz ? "Đáp án" : SIDE_LABEL[q.ask === "term" ? "definition" : "term"];
     let body;
     if (q.type === "mc") {
-      body = `<div class="question__ask">Chọn ${answerLabel.toLowerCase()} đúng</div>
+      body = `<div class="question__ask">${q.multi ? "Chọn tất cả đáp án đúng" : `Chọn ${answerLabel.toLowerCase()} đúng`}</div>
         <div class="options">${q.choices
           .map((c, k) => `<button class="option" type="button" data-value="${esc(c)}" aria-pressed="false"><span class="option__key">${k + 1}</span><span class="option__text">${esc(c)}</span></button>`)
           .join("")}</div>`;
@@ -156,8 +165,10 @@
           <button class="option" type="button" data-value="false" aria-pressed="false"><span class="option__key">${icon("x")}</span><span class="option__text">Sai</span></button>
         </div>`;
     } else {
-      body = `<label class="question__ask" for="in-${q.id}">${q.quiz ? "Gõ chữ cái hoặc nội dung đáp án" : `Gõ ${answerLabel.toLowerCase()}`}</label>
-        <div class="answer-row"><input class="input" id="in-${q.id}" placeholder="${q.quiz ? "Ví dụ: C" : "Nhập đáp án"}" autocomplete="off" autocapitalize="off" spellcheck="false" /></div>`;
+      const askText = q.multi ? "Gõ các chữ cái của tất cả đáp án đúng" : q.quiz ? "Gõ chữ cái hoặc nội dung đáp án" : `Gõ ${answerLabel.toLowerCase()}`;
+      const hint = q.multi ? "Ví dụ: A, C, D" : q.quiz ? "Ví dụ: C" : "Nhập đáp án";
+      body = `<label class="question__ask" for="in-${q.id}">${askText}</label>
+        <div class="answer-row"><input class="input" id="in-${q.id}" placeholder="${hint}" autocomplete="off" autocapitalize="off" spellcheck="false" /></div>`;
     }
     return `
       <article class="question" data-q="${q.id}" aria-label="Câu ${i + 1}">
@@ -209,6 +220,7 @@
 
     const given = (r) => {
       if (r.question.type === "tf") return r.given === "" ? "" : r.given === "true" ? "Đúng" : "Sai";
+      if (r.question.multi && r.question.type === "mc") return study.selectionOf(r.given).join("; ");
       return r.given;
     };
     const expected = (r) => (r.question.type === "tf" ? (r.question.isTrue ? "Đúng" : `Sai — đáp án đúng là: ${r.question.answer}`) : r.question.answer);

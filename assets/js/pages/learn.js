@@ -110,13 +110,19 @@
       // Giữ nguyên thứ tự A–D của thẻ trắc nghiệm vì có phương án kiểu "Cả a, b và c"
       current.choices = quiz ? quiz.options.map((o) => o.text) : study.buildChoices(card, all, answerField, 4);
       current.correct = quiz ? quiz.answer.text : card[answerField];
+      // Câu chọn nhiều đáp án: phải chọn đủ và đúng tất cả rồi bấm Xác nhận
+      current.multi = !!(quiz && quiz.multi);
+      current.correctTexts = quiz ? quiz.answers.map((o) => o.text) : [current.correct];
+      current.selected = new Set();
       // Nhãn phương án luôn là 1–4 để khớp phím tắt; chữ cái trong thẻ chỉ dùng để chấm.
       const keys = current.choices.map((_, i) => i + 1);
+      const askText = current.multi ? "Chọn tất cả đáp án đúng" : quiz ? "Chọn đáp án đúng" : `Chọn ${label[answerField].toLowerCase()} đúng`;
       body = `
-        <div class="question__ask">${quiz ? "Chọn đáp án đúng" : `Chọn ${label[answerField].toLowerCase()} đúng`}</div>
+        <div class="question__ask">${askText}</div>
         <div class="options">${current.choices
-          .map((c, i) => `<button class="option" type="button" data-choice="${i}"><span class="option__key">${keys[i]}</span><span class="option__text">${esc(c)}</span></button>`)
-          .join("")}</div>`;
+          .map((c, i) => `<button class="option" type="button" data-choice="${i}"${current.multi ? ' aria-pressed="false"' : ""}><span class="option__key">${keys[i]}</span><span class="option__text">${esc(c)}</span></button>`)
+          .join("")}</div>
+        ${current.multi ? `<div class="answer-row" style="margin-top:16px"><button class="btn btn-primary btn-lg" type="button" id="multi-submit" disabled>Xác nhận <span class="kbd" style="margin-left:4px">Enter</span></button></div>` : ""}`;
     } else {
       body = `
         <label class="question__ask" for="answer">Gõ ${label[answerField].toLowerCase()}</label>
@@ -131,7 +137,11 @@
     document.getElementById("q-speak").addEventListener("click", () => speak(current.prompt));
 
     if (type === "mc") {
-      app.querySelectorAll("[data-choice]").forEach((b) => b.addEventListener("click", () => answerMc(Number(b.dataset.choice))));
+      app.querySelectorAll("[data-choice]").forEach((b) =>
+        b.addEventListener("click", () => (current.multi ? toggleChoice(Number(b.dataset.choice)) : answerMc(Number(b.dataset.choice))))
+      );
+      const submit = document.getElementById("multi-submit");
+      submit && submit.addEventListener("click", answerMulti);
     } else {
       const input = document.getElementById("answer");
       input.focus();
@@ -157,6 +167,33 @@
     });
     record(correct);
     feedback(correct, { given: chosen });
+  }
+
+  function toggleChoice(i) {
+    if (current.answered) return;
+    const on = !current.selected.has(i);
+    current.selected[on ? "add" : "delete"](i);
+    const btn = document.querySelector(`[data-choice="${i}"]`);
+    btn.classList.toggle("is-selected", on);
+    btn.setAttribute("aria-pressed", String(on));
+    document.getElementById("multi-submit").disabled = !current.selected.size;
+  }
+
+  function answerMulti() {
+    if (current.answered || !current.selected.size) return;
+    current.answered = true;
+    const chosen = [...current.selected].map((i) => current.choices[i]);
+    const correct = chosen.length === current.correctTexts.length && chosen.every((c) => current.correctTexts.includes(c));
+    document.querySelectorAll("[data-choice]").forEach((b, idx) => {
+      b.disabled = true;
+      b.classList.remove("is-selected");
+      if (current.correctTexts.includes(current.choices[idx])) b.classList.add("is-correct");
+      else if (current.selected.has(idx)) b.classList.add("is-wrong");
+      else b.classList.add("is-dim");
+    });
+    document.getElementById("multi-submit").hidden = true;
+    record(correct);
+    feedback(correct, { given: chosen.join("; ") });
   }
 
   function answerWritten(given) {
@@ -280,10 +317,16 @@
       return;
     }
     if (current && current.type === "mc" && !current.answered) {
+      // Câu chọn nhiều đáp án: Enter xác nhận (chặn cả Enter mặc định của nút đang focus)
+      if (current.multi && e.key === "Enter") {
+        e.preventDefault();
+        answerMulti();
+        return;
+      }
       // Phím 1–4, hoặc A–F với thẻ trắc nghiệm
       let i = /^[1-4]$/.test(e.key) ? Number(e.key) - 1 : -1;
       if (current.quiz && /^[a-f]$/i.test(e.key)) i = e.key.toUpperCase().charCodeAt(0) - 65;
-      if (i >= 0 && i < current.choices.length) answerMc(i);
+      if (i >= 0 && i < current.choices.length) current.multi ? toggleChoice(i) : answerMc(i);
     }
   }
 

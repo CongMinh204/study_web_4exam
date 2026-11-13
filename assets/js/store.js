@@ -165,6 +165,8 @@
   // Bộ thẻ có sẵn (assets/data/*.js) được thêm đúng một lần cho mỗi người dùng;
   // ghi id vào prefs.installedPacks để môn đã bị xóa không tự xuất hiện lại.
   // Gói có "extends" nối học phần vào môn của gói gốc thay vì tạo môn mới.
+  // Học phần có "into": <tiêu đề> thì nối thẻ vào học phần cùng tên đã có trong môn (giữ nguyên tiến độ các thẻ cũ);
+  // người dùng đã xóa học phần đó thì bỏ qua, không tạo lại.
   function installPacks(s) {
     const packs = (window.App && App.PACKS) || [];
     const installed = (s.prefs.installedPacks = s.prefs.installedPacks || []);
@@ -194,6 +196,15 @@
       packSubjects[pack.id] = subject.id;
       pack.sets.forEach((set) => {
         const at = tick++;
+        if (set.into) {
+          const target = s.sets.find((t) => t.subjectId === subject.id && t.title === set.into);
+          if (!target) return;
+          const next = s.cards.filter((c) => c.setId === target.id).reduce((n, c) => Math.max(n, c.order + 1), 0);
+          set.cards.forEach(([term, definition], i) => s.cards.push({ id: uid(), setId: target.id, term, definition, order: next + i }));
+          if (set.description) target.description = set.description;
+          target.updatedAt = at;
+          return;
+        }
         const studySet = { id: uid(), subjectId: subject.id, title: set.title, description: set.description || "", createdAt: at, updatedAt: at };
         s.sets.push(studySet);
         set.cards.forEach(([term, definition], order) => s.cards.push({ id: uid(), setId: studySet.id, term, definition, order }));

@@ -124,7 +124,7 @@ tests/                # unit test (node:test)
 
 Thứ tự nạp script trong mọi trang: `icons.js` → `study.js` → `data/*.js` → `store.js` → `ui.js` → `pages/<trang>.js`.
 
-**Bộ thẻ có sẵn**: mỗi file `assets/data/*.js` nối một gói `{ id, subject, sets: [{ title, description, cards: [[term, definition]] }] }` vào `App.PACKS`. `store.js` thêm gói vào dữ liệu người dùng đúng một lần (ghi `id` vào `prefs.installedPacks`), nên người dùng xóa môn thì môn không tự quay lại. Sửa nội dung một gói đã phát hành thì đổi `id` (ví dụ `mln111-v2`). Gói được sinh bằng script từ file nguồn, không sửa tay.
+**Bộ thẻ có sẵn**: mỗi file `assets/data/*.js` nối một gói `{ id, subject, sets: [{ title, description, cards: [[term, definition]] }] }` vào `App.PACKS`. `store.js` thêm gói vào dữ liệu người dùng đúng một lần (ghi `id` vào `prefs.installedPacks`), nên người dùng xóa môn thì môn không tự quay lại. Sửa nội dung một gói đã phát hành thì đổi `id` (ví dụ `mln111-v2`). Gói được sinh bằng script từ file nguồn, không sửa tay. Gói có `extends: <id gói gốc>` nối học phần vào môn của gói gốc; học phần có `into: <tiêu đề>` nối thẻ vào học phần cùng tên đã có trong môn (giữ tiến độ các thẻ cũ, bỏ qua nếu người dùng đã xóa học phần đó).
 
 ## Mô hình dữ liệu
 

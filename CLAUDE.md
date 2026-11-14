@@ -95,7 +95,9 @@ npm run smoke                     # chạy thử end-to-end mọi luồng chính
 npm run assets:version            # gắn ?v=<hash> cho JS/CSS trong mọi trang .html
 ```
 
-Sau khi sửa bất kỳ file nào trong `assets/`, chạy `npm run assets:version` trước khi commit: hosting tĩnh cho trình duyệt giữ file cũ tới 10 phút, nên URL phải đổi khi nội dung đổi.
+Sau khi sửa bất kỳ file nào trong `assets/`, chạy `npm run assets:version` trước khi commit: hosting tĩnh cho trình duyệt giữ file cũ tới 10 phút, nên URL phải đổi khi nội dung đổi. Lệnh này cũng ghi lại `BUILD` trong `sw.js` để service worker cài lại và lưu bản mới cho chế độ offline.
+
+**PWA** (cài lên màn hình chính, chạy offline): `manifest.webmanifest`, `sw.js` ở thư mục gốc (mạng trước, mất mạng dùng bản đã lưu), icon trong `assets/icons/` (sinh bằng `node scripts/make-icons.mjs`), thẻ meta iOS trong `<head>` mọi trang, đăng ký service worker ở cuối `ui.js`. Trang mới phải được thêm vào `PAGES` trong `sw.js` và có đủ các thẻ meta PWA.
 
 Trước khi báo hoàn thành một tính năng: chạy `npm test` và `npm run smoke` (cần dev server), đảm bảo không lỗi, rồi chụp screenshot theo quy tắc 1.
 

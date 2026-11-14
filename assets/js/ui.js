@@ -511,4 +511,9 @@
     renderFooter();
     reveal();
   });
+
+  // PWA: service worker cho chế độ offline. Chỉ chạy qua http(s)/localhost; mở bằng file:// thì bỏ qua.
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
 })();

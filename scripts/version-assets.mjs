@@ -18,7 +18,9 @@ const hashOf = (path) => {
 };
 
 let changed = 0;
-for (const page of readdirSync(root).filter((f) => f.endsWith(".html"))) {
+const pages = readdirSync(root).filter((f) => f.endsWith(".html"));
+const built = [];
+for (const page of pages) {
   const file = join(root, page);
   const html = readFileSync(file, "utf8");
   const next = html.replace(/(src|href)="(assets\/[^"?]+\.(?:js|css))(?:\?v=[^"]*)?"/g, (_, attr, path) => `${attr}="${path}?v=${hashOf(path)}"`);
@@ -26,5 +28,16 @@ for (const page of readdirSync(root).filter((f) => f.endsWith(".html"))) {
     writeFileSync(file, next);
     changed++;
   }
+  built.push(next.replace(/\r\n/g, "\n"));
 }
-console.log(`version-assets: cập nhật ${changed} trang, ${hashes.size} file`);
+
+// sw.js đổi nội dung khi bất kỳ trang/asset nào đổi (trang đã chứa ?v=hash của asset) để trình duyệt cài lại
+// service worker và lưu bản mới cho chế độ offline.
+const manifest = readFileSync(join(root, "manifest.webmanifest"), "utf8").replace(/\r\n/g, "\n");
+const build = createHash("sha1").update(built.join("\0") + manifest).digest("hex").slice(0, 8);
+const swFile = join(root, "sw.js");
+const sw = readFileSync(swFile, "utf8");
+const swNext = sw.replace(/const BUILD = "[^"]*";/, `const BUILD = "${build}";`);
+if (swNext !== sw) writeFileSync(swFile, swNext);
+
+console.log(`version-assets: cập nhật ${changed} trang, ${hashes.size} file, sw.js build ${build}`);

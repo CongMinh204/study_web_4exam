@@ -1,6 +1,7 @@
 # MLN122 SU26 RE: 60 câu chia theo chương
 
 Nguồn: fuoverflow.com (MLN122 SU26 RE). Đáp án lấy theo bình luận đồng thuận trên diễn đàn, không phải đáp án chính thức. Việc xếp câu vào chương do tự phân theo 6 chương giáo trình KTCT Mác–Lênin.
+Đã bỏ câu 6 và 14 (ảnh đề mất phương án A–D nên chỉ làm được thẻ tự luận); đề còn 58 câu.
 
 ## CHƯƠNG 1: ĐỐI TƯỢNG, PHƯƠNG PHÁP NGHIÊN CỨU VÀ CHỨC NĂNG CỦA KINH TẾ CHÍNH TRỊ MÁC–LÊNIN
 
@@ -149,14 +150,6 @@ Nguồn: fuoverflow.com (MLN122 SU26 RE). Đáp án lấy theo bình luận đ�
 **Đáp án: B**
 
 ## CHƯƠNG 3: GIÁ TRỊ THẶNG DƯ TRONG NỀN KINH TẾ THỊ TRƯỜNG
-
-### Câu 6. Quy luật kinh tế cơ bản của chủ nghĩa tư bản là gì?
-**Đáp án: Quy luật giá trị thặng dư**
-> Lưu ý: ảnh đề không hiển thị các phương án A/B/C/D; đáp án theo 1 bình luận duy nhất.
-
-### Câu 14. Sản xuất giá trị thặng dư là quy luật kinh tế như thế nào?
-**Đáp án: Tuyệt đối của chủ nghĩa tư bản**
-> Lưu ý: ảnh đề chỉ hiển thị phương án A ("Tuyệt đối của chủ nghĩa xã hội"), các phương án còn lại bị cắt. Đáp án B theo bình luận; có 1 bình luận ghi "cơ bản của chủ nghĩa tư bản".
 
 ### Câu 15. Nguyên nhân của bản chất khủng hoảng kinh tế chủ nghĩa tư bản là gì?
 - A. Bắt nguồn từ mâu thuẫn của bản chất của chủ nghĩa tư bản

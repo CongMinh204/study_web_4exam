@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { questionNo, keyOf } from "./lib/exam-cards.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -67,19 +68,6 @@ function parseExam({ file, code, expected }) {
   if (JSON.stringify(counts) !== JSON.stringify(expected)) throw new Error(`${code}: số câu mỗi mảng ${counts} khác mong đợi ${expected}`);
   if (new Set(nos).size !== 50 || Math.min(...nos) !== 1 || Math.max(...nos) !== 50) throw new Error(`${code}: các câu gốc phải là 1–50, không trùng`);
   return sets;
-}
-
-const questionNo = (front) => Number(front.match(/^Câu (\d+)\./)[1]);
-
-// Khóa so khớp "giống hệt": nội dung câu hỏi + tập phương án + đáp án đúng (bỏ qua chữ cái và thứ tự phương án).
-const norm = (t) => t.toLowerCase().replace(/\s+/g, " ").trim();
-function keyOf([front, back]) {
-  const [head, ...rest] = front.split("\n\n");
-  const question = head.replace(/^Câu \d+\.\s*/, "");
-  const optionTexts = rest.join("\n\n").split("\n").map((l) => l.replace(/^[A-F]\.\s*/, ""));
-  const answerTexts = back.split("\n\n")[0].split("\n").map((l) => l.replace(/^[A-F]\.\s*/, ""));
-  const sorted = (xs) => xs.map(norm).sort().join("|");
-  return `${norm(question)}||${sorted(optionTexts)}||${sorted(answerTexts)}`;
 }
 
 // Học phần tổng hợp: cả đề theo đúng thứ tự câu gốc 1 → 50 (kể cả câu trùng với đề khác).

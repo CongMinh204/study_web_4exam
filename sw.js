@@ -2,7 +2,7 @@
 // kẹt ở bản cũ (bộ thẻ mới luôn đến ngay khi có mạng). Dữ liệu học nằm ở localStorage nên không đi qua đây.
 // BUILD do scripts/version-assets.mjs ghi lại mỗi khi nội dung assets đổi: sw.js đổi byte thì trình duyệt cài lại
 // và dọn cache cũ.
-const BUILD = "0e317e52";
+const BUILD = "f8a0c2dd";
 const CACHE = `recall-${BUILD}`;
 const NETWORK_TIMEOUT = 4000; // mạng chập chờn: quá 4 giây thì dùng bản đã lưu
 

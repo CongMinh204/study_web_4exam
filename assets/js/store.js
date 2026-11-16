@@ -162,6 +162,69 @@
     return state;
   }
 
+  // Gói có "replaces": { packs, dropSets } thay cấu trúc học phần của các gói cũ đã phát hành (ví dụ gộp đề vào chương):
+  // - học phần cùng tên được giữ, thẻ đối chiếu lại theo mặt trước (thẻ còn trong gói giữ nguyên id nên giữ tiến độ,
+  //   thẻ không còn thì bị xóa, thẻ mới được thêm);
+  // - học phần trong dropSets bị xóa, tiến độ của thẻ được chuyển sang thẻ cùng mặt trước ở học phần mới.
+  // Trả về false nếu người dùng chưa từng cài gói cũ (cài như gói thường); đã xóa môn thì bỏ qua, không tạo lại.
+  function migratePack(s, pack, packSubjects, installed, nextTick) {
+    const { packs: oldIds, dropSets = [] } = pack.replaces;
+    if (!oldIds.some((id) => installed.includes(id))) return false;
+    const subject = oldIds.map((id) => s.subjects.find((x) => x.id === packSubjects[id])).find(Boolean) || s.subjects.find((x) => x.name === pack.subject.name);
+    if (!subject) return true;
+
+    const cardsOf = (setId) => s.cards.filter((c) => c.setId === setId);
+    const own = s.sets.filter((t) => t.subjectId === subject.id);
+    const dropped = own.filter((t) => dropSets.includes(t.title));
+    // Tiến độ theo mặt trước của thẻ; trùng thì lấy bản học tốt hơn
+    const byTerm = new Map();
+    dropped.forEach((t) =>
+      cardsOf(t.id).forEach((c) => {
+        const p = s.progress[c.id];
+        if (p && (!byTerm.has(c.term) || p.box > byTerm.get(c.term).box)) byTerm.set(c.term, p);
+      })
+    );
+
+    // Mốc thời gian xuất phát từ học phần cũ sớm nhất của gói, để học phần người dùng tự tạo sau đó vẫn nằm sau
+    const packTitles = new Set([...dropSets, ...pack.sets.map((x) => x.title)]);
+    const base = Math.min(nextTick(), ...own.filter((t) => packTitles.has(t.title)).map((t) => t.createdAt));
+    pack.sets.forEach((set, index) => {
+      const at = base + index;
+      let target = own.find((t) => t.title === set.title && !dropSets.includes(t.title));
+      if (!target) {
+        target = { id: uid(), subjectId: subject.id, title: set.title, description: "", createdAt: at, updatedAt: at };
+        s.sets.push(target);
+      }
+      const existing = new Map(cardsOf(target.id).map((c) => [c.term, c]));
+      const keep = new Set();
+      set.cards.forEach(([term, definition], order) => {
+        let card = existing.get(term);
+        if (card) {
+          card.definition = definition;
+          card.order = order;
+        } else {
+          card = { id: uid(), setId: target.id, term, definition, order };
+          s.cards.push(card);
+          if (byTerm.has(term)) s.progress[card.id] = { ...byTerm.get(term), cardId: card.id };
+        }
+        keep.add(card.id);
+      });
+      cardsOf(target.id).filter((c) => !keep.has(c.id)).forEach((c) => delete s.progress[c.id]);
+      s.cards = s.cards.filter((c) => c.setId !== target.id || keep.has(c.id));
+      // Gán lại mốc thời gian theo thứ tự trong gói để danh sách học phần đúng thứ tự mới
+      Object.assign(target, { description: set.description || "", createdAt: at, updatedAt: at });
+    });
+
+    const dropIds = new Set(dropped.map((t) => t.id));
+    dropped.forEach((t) => cardsOf(t.id).forEach((c) => delete s.progress[c.id]));
+    s.cards = s.cards.filter((c) => !dropIds.has(c.setId));
+    s.results = s.results.filter((r) => !dropIds.has(r.setId));
+    s.sets = s.sets.filter((t) => !dropIds.has(t.id));
+    subject.updatedAt = nextTick();
+    packSubjects[pack.id] = subject.id;
+    return true;
+  }
+
   // Bộ thẻ có sẵn (assets/data/*.js) được thêm đúng một lần cho mỗi người dùng;
   // ghi id vào prefs.installedPacks để môn đã bị xóa không tự xuất hiện lại.
   // Gói có "extends" nối học phần vào môn của gói gốc thay vì tạo môn mới.
@@ -176,6 +239,11 @@
     let tick = Date.now();
     packs.forEach((pack) => {
       if (installed.includes(pack.id)) return;
+      if (pack.replaces && migratePack(s, pack, packSubjects, installed, () => tick++)) {
+        installed.push(pack.id);
+        changed = true;
+        return;
+      }
       const now = tick++;
       let subject = null;
       if (pack.extends) {

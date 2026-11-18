@@ -39,8 +39,8 @@ for (const vp of [
 
   await page.goto(`${BASE}/index.html`, { waitUntil: "networkidle" });
 
-  await step("Trang chủ hiển thị 9 môn học (5 mẫu + Triết học + MLN111 FE retake + MLN122 FE + SAP341)", async () => {
-    expect((await page.locator(".subject-card").count()) === 9, "số môn học khác 9");
+  await step("Trang chủ hiển thị 10 môn học (5 mẫu + Triết học + MLN111 FE retake + MLN122 FE + SAP341 + PRM393)", async () => {
+    expect((await page.locator(".subject-card").count()) === 10, "số môn học khác 10");
   });
 
   await step("Tìm kiếm môn học (bỏ dấu)", async () => {
@@ -65,7 +65,7 @@ for (const vp of [
     await shot("subject-modal");
     await page.click(".modal__foot .btn-primary");
     await page.waitForTimeout(300);
-    expect((await page.locator(".subject-card").count()) === 10, "chưa có 10 môn");
+    expect((await page.locator(".subject-card").count()) === 11, "chưa có 11 môn");
   });
 
   await step("Tạo học phần bằng trình soạn + nhập nhanh", async () => {

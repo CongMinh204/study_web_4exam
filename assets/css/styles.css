@@ -1912,6 +1912,8 @@ button {
   flex: 1;
   display: grid;
   align-content: start;
+  /* minmax(0, …) để tên học phần dài bị cắt bằng dấu … thay vì nới rộng cột */
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   min-width: 0;
 }
@@ -4000,7 +4002,7 @@ button {
   }
 
   .subjects {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .subject-card--featured {

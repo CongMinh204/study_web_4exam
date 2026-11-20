@@ -1,4 +1,4 @@
-// Bộ thẻ có sẵn: PRM393, sinh từ scripts/src/PRM393_SU26_FE.md bằng scripts/gen-prm393.mjs.
+// Bộ thẻ có sẵn: PRM393, sinh từ scripts/src/PRM393_SU26_FE.md và PRM392_2025_cau_on_PRM393.md bằng scripts/gen-prm393.mjs.
 // Mặt trước: câu hỏi kèm các phương án. Mặt sau: đáp án. Được thêm một lần vào dữ liệu người dùng (store.js).
 (window.App = window.App || {}).PACKS = (window.App.PACKS || []).concat(
 {
@@ -213,6 +213,92 @@
     [
      "Câu 50. Which practice improves API security?\n\nA. Hardcoding keys\nB. Using HTTPS\nC. Ignoring errors\nD. Using globals",
      "B. Using HTTPS"
+    ]
+   ]
+  }
+ ]
+},
+{
+ "id": "prm393-topics-v1",
+ "extends": "prm393-v1",
+ "subject": {
+  "name": "PRM393",
+  "description": "PRM393 · Đề SU26 FE, 50 câu trắc nghiệm Flutter",
+  "icon": "code",
+  "color": "#38bdf8"
+ },
+ "sets": [
+  {
+   "title": "PRM392 · SharedPreferences",
+   "description": "câu hỏi từ đề PRM392 SU25/SP25 FE, chọn lọc phần dùng được cho Flutter · đáp án theo bình luận cộng đồng, không chính thức.",
+   "cards": [
+    [
+     "Câu 1. Which method is used for storing key-value pairs in Android?\n\nA. Internal Storage\nB. External Storage\nC. Shared Preferences\nD. Room database",
+     "C. Shared Preferences\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 49. Liên hệ Flutter: package `shared_preferences` cũng lưu dữ liệu nhỏ dạng key-value."
+    ],
+    [
+     "Câu 2. What is Shared Preferences used for in Android development?\n\nA. To store large datasets\nB. To store private primitive data in key-value pairs\nC. To manage SQLite databases\nD. To send data over the network",
+     "B. To store private primitive data in key-value pairs\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 60. Liên hệ Flutter: `SharedPreferences.getInstance()` rồi `setString/setInt/setBool`; chỉ dùng cho kiểu nguyên thủy, không dùng cho dữ liệu lớn."
+    ]
+   ]
+  },
+  {
+   "title": "PRM392 · SQLite / Room",
+   "description": "câu hỏi từ đề PRM392 SU25/SP25 FE, chọn lọc phần dùng được cho Flutter · đáp án theo bình luận cộng đồng, không chính thức.",
+   "cards": [
+    [
+     "Câu 1. Why is it generally recommended to use transactions when performing multiple database operations?\n\nA. Transactions ensure atomicity; either all operations succeed, or none do.\nB. Transactions improve database performance.\nC. Transactions are required by Android's SQLite implementation.\nD. Transactions simplify database code",
+     "A. Transactions ensure atomicity; either all operations succeed, or none do.\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 48. Liên hệ Flutter: `sqflite` có `db.transaction((txn) async { ... })`; nguyên lý atomicity giống nhau."
+    ]
+   ]
+  },
+  {
+   "title": "PRM392 · REST API / HTTP",
+   "description": "câu hỏi từ đề PRM392 SU25/SP25 FE, chọn lọc phần dùng được cho Flutter · đáp án theo bình luận cộng đồng, không chính thức.",
+   "cards": [
+    [
+     "Câu 1. What is the difference between @Path and @Query annotations in Retrofit?\n\nA. @Path is used to insert values into the URL path, while @Query is used to add parameters to the URL's query string.\nB. @Path encrypts data before sending, whereas @Query sends data in plain text.\nC. @Path is used for POST requests, and @Query is used for GET requests.\nD. @Path and @Query serve the same purpose and can be used interchangeably",
+     "A. @Path is used to insert values into the URL path, while @Query is used to add parameters to the URL's query string.\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 55. Liên hệ Flutter: tên annotation là của Retrofit, nhưng ý hỏi là khác biệt giữa tham số trong đường dẫn (`/books/5`) và query string (`/books?page=2`), áp dụng y hệt khi gọi API bằng `http` hoặc `dio` (`Uri.parse('$base/books/$id')` so với `queryParameters`). Vì vậy giữ lại."
+    ]
+   ]
+  },
+  {
+   "title": "PRM392 · Kiến trúc",
+   "description": "câu hỏi từ đề PRM392 SU25/SP25 FE, chọn lọc phần dùng được cho Flutter · đáp án theo bình luận cộng đồng, không chính thức.",
+   "cards": [
+    [
+     "Câu 1. Why might MVP be preferred over MVC in Android development?\n\nA. MVP allows for easier unit testing by decoupling the View and the Model through the Presenter\nB. MVP is officially recommended by Google\nC. MVP supports asynchronous data loading natively\nD. MVP is simpler and requires less code",
+     "A. MVP allows for easier unit testing by decoupling the View and the Model through the Presenter\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 51. Liên hệ Flutter: tách logic ra khỏi widget (ví dụ class `Validators` riêng) thì viết unit test không cần dựng UI."
+    ],
+    [
+     "Câu 2. Consider the following code (class LoginController with LoginView view, LoginModel model; performLogin(username, password) calls model.isValidUser(...) then view.showLoginSuccess() or view.showLoginError()). What is its purpose within an MVC architecture?\n\nA. The Controller handles user input and updates the View based on the Model's data\nB. The Controller directly updates the Model\nC. The View handles the business logic\nD. The Model updates the View directly",
+     "A. The Controller handles user input and updates the View based on the Model's data\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 52. Liên hệ Flutter: vai trò Controller tương ứng với lớp xử lý sự kiện (controller/notifier) nằm giữa widget và model."
+    ],
+    [
+     "Câu 3. Which role does the ViewModel play in the MVVM architecture?\n\nA. The ViewModel manages the UI state and interacts with the Model.\nB. The ViewModel directly manipulates the View's UI elements.\nC. The ViewModel handles user input events.\nD. The ViewModel is responsible for data persistence.",
+     "A. The ViewModel manages the UI state and interacts with the Model.\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 54. Liên hệ Flutter: `ChangeNotifier`/`Provider`/`Riverpod Notifier` giữ state, gọi `notifyListeners()` để widget tự build lại."
+    ],
+    [
+     "Câu 4. Which method should be avoided for handling business logic in MVC architecture?\n\nA. View\nB. Model\nC. Controller\nD. Presenter",
+     "A. View\n\nGhi chú: Nguồn: PRM392 SP25 FE - Câu 53. Liên hệ Flutter: không đặt business logic trong `build()` của widget."
+    ],
+    [
+     "Câu 5. Which of the following is a key difference between the MVC and MVP architectural patterns?\n\nA. In MVC, the Controller updates the View directly, while in MVP, the View is updated through the Presenter using interfaces.\nB. MVC does not support user input directly, while MVP is designed to handle user input through the Presenter.\nC. In MVC, the Model updates the View directly, while in MVP, the Model updates the View through the Presenter.\nD. MVC is used exclusively for web applications, while MVP is used for both web and mobile applications.",
+     "A. In MVC, the Controller updates the View directly, while in MVP, the View is updated through the Presenter using interfaces.\n\nGhi chú: Nguồn: PRM392 SP25 FE - Câu 54."
+    ]
+   ]
+  },
+  {
+   "title": "PRM392 · SDK, emulator",
+   "description": "câu hỏi từ đề PRM392 SU25/SP25 FE, chọn lọc phần dùng được cho Flutter · đáp án theo bình luận cộng đồng, không chính thức.",
+   "cards": [
+    [
+     "Câu 1. What is the purpose of an emulator in Android development?\n\nA. To test the app on real devices only.\nB. To simulate an Android device environment for testing and debugging.\nC. To compile the app's code.\nD. To deploy the app to a Google Play Store.",
+     "B. To simulate an Android device environment for testing and debugging.\n\nGhi chú: Nguồn: PRM392 SU25 FE - Câu 37. Liên hệ Flutter: `flutter emulators`, `flutter run` vẫn chạy trên Android emulator."
+    ],
+    [
+     "Câu 2. What is the primary purpose of the Android Software Development Kit (SDK)?\n\nA. To provide pre-built applications for Android devices\nB. To offer a set of tools and libraries for developing Android apps.\nC. To manage the Android operating system updates.\nD. To simulate Android hardware for testing purposes.",
+     "B. To offer a set of tools and libraries for developing Android apps.\n\nGhi chú: Nguồn: PRM392 SP25 FE - Câu 37. Liên hệ Flutter: Flutter cần Android SDK để build ra Android (`flutter doctor` kiểm tra), và khái niệm \"SDK = bộ công cụ + thư viện\" giống với Flutter SDK. Giữ lại dù file gợi ý ban đầu định loại."
     ]
    ]
   }

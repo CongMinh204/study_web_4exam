@@ -68,7 +68,7 @@
       ["Tính năng", [["Tiến độ", "index.html#platform"], ["Phát âm", "index.html#platform"], ["Phím tắt", "index.html#platform"], ["Thống kê", "index.html#platform"]]],
       ["Phương pháp", [["Chủ động nhớ lại", "index.html#methods"], ["Lặp lại ngắt quãng", "index.html#methods"], ["Tự kiểm tra", "index.html#methods"]]],
       ["Phím tắt", [["Space — lật thẻ", null], ["← → — chuyển thẻ", null], ["1–4 — chọn đáp án", null], ["Enter — tiếp tục", null]]],
-      ["Dữ liệu", [["Xuất bản sao lưu", "export"], ["Nhập bản sao lưu", "import"], ["Khôi phục dữ liệu mẫu", "reset"]]],
+      ["Dữ liệu", [["Xuất bản sao lưu", "export"], ["Nhập bản sao lưu", "import"], ["Khôi phục bộ thẻ có sẵn", "reset"]]],
     ];
     host.className = "footer";
     host.innerHTML = `
@@ -118,7 +118,7 @@
           toast(err.message || "Không đọc được tệp");
         }
       } else if (action === "reset") {
-        const ok = await confirmDialog({ title: "Khôi phục dữ liệu mẫu?", message: "Mọi môn học, thẻ và tiến độ hiện tại sẽ bị xóa và thay bằng dữ liệu mẫu.", confirmLabel: "Khôi phục", danger: true });
+        const ok = await confirmDialog({ title: "Khôi phục bộ thẻ có sẵn?", message: "Mọi môn học, thẻ và tiến độ hiện tại sẽ bị xóa, chỉ còn các bộ thẻ có sẵn.", confirmLabel: "Khôi phục", danger: true });
         if (!ok) return;
         App.store.resetToSample();
         location.href = "index.html";

@@ -1,5 +1,6 @@
-// Sinh assets/data/prm393.js từ scripts/src/PRM393_SU26_FE.md (không sửa tay file đầu ra).
-// Đề không chia chương nên chỉ có một học phần: cả đề, câu 1 → 50.
+// Sinh assets/data/prm393.js từ scripts/src/PRM393_SU26_FE.md và PRM392_2025_cau_on_PRM393.md (không sửa tay file đầu ra).
+// Gói đầu: đề SU26 FE không chia chương nên chỉ có một học phần, cả đề câu 1 → 50.
+// Gói thứ hai: các câu PRM392 2025 dùng được để ôn PRM393, nối vào môn PRM393 theo chủ đề.
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -61,10 +62,58 @@ const pack = {
   sets: [{ title: `Đề SU26 FE · Tổng hợp ${EXPECTED} câu`, description: `Cả đề PRM393 SU26 FE, câu 1–${EXPECTED} · ${note}`, cards }],
 };
 
-const out = `// Bộ thẻ có sẵn: PRM393, sinh từ scripts/src/PRM393_SU26_FE.md bằng scripts/gen-prm393.mjs.
+// Gói đầu đã phát hành nên không đổi id/nội dung; gói bổ sung dùng "extends".
+const TOPIC_FILE = "PRM392_2025_cau_on_PRM393.md";
+const TOPIC_EXPECTED = [2, 1, 1, 5, 2];
+const topicNote = "câu hỏi từ đề PRM392 SU25/SP25 FE, chọn lọc phần dùng được cho Flutter · đáp án theo bình luận cộng đồng, không chính thức.";
+
+function parseTopics() {
+  const sets = [];
+  let t = null;
+  const flushTopic = () => {
+    if (!t) return;
+    const m = t.answer.match(/^([A-F])$/);
+    const opt = m && t.options.find((o) => o.key === m[1]);
+    if (!opt || t.options.length < 2 || !t.text) throw new Error(`${t.label}: câu hỏi/đáp án không đọc được`);
+    const no = sets.at(-1).cards.length + 1;
+    const front = `Câu ${no}. ${t.text}\n\n${t.options.map((o) => `${o.key}. ${o.text}`).join("\n")}`;
+    const notes = [`Nguồn: ${t.label}.`, ...(t.flutter ? [`Liên hệ Flutter: ${t.flutter}`] : [])];
+    sets.at(-1).cards.push([front, `${opt.key}. ${opt.text}\n\nGhi chú: ${notes.join(" ")}`]);
+    t = null;
+  };
+  for (const line of readFileSync(join(root, "scripts/src", TOPIC_FILE), "utf8").split(/\r?\n/)) {
+    let m;
+    if ((m = line.match(/^## \d+\. (.+)$/))) {
+      flushTopic();
+      sets.push({ title: `PRM392 · ${m[1].replace(/\s*\(.*\)$/, "")}`, description: topicNote, cards: [] });
+    } else if (line.startsWith("## ")) {
+      flushTopic();
+      sets.push(null);
+    } else if (!sets.at(-1)) continue;
+    else if ((m = line.match(/^### (PRM392 [A-Z0-9]+ FE - Câu \d+)/))) {
+      flushTopic();
+      t = { label: m[1], text: "", options: [], answer: "", flutter: "" };
+    } else if (!t) continue;
+    else if ((m = line.match(/^- ([A-F])\. (.+)$/))) t.options.push({ key: m[1], text: m[2] });
+    else if ((m = line.match(/^\*\*Đáp án: (.+)\*\*$/))) t.answer = m[1];
+    else if ((m = line.match(/^Liên hệ Flutter: (.+)$/))) t.flutter = m[1];
+    else if (line.trim() && !t.options.length && !t.text) t.text = line.trim();
+  }
+  flushTopic();
+  return sets.filter((x) => x && x.cards.length);
+}
+
+const topicSets = parseTopics();
+const counts = topicSets.map((x) => x.cards.length);
+console.log(`${TOPIC_FILE}: ${counts.join(" + ")} = ${counts.reduce((a, b) => a + b, 0)} câu`);
+if (JSON.stringify(counts) !== JSON.stringify(TOPIC_EXPECTED)) throw new Error(`số câu mỗi chủ đề ${counts} khác mong đợi ${TOPIC_EXPECTED}`);
+
+const packs = [pack, { id: "prm393-topics-v1", extends: pack.id, subject: SUBJECT, sets: topicSets }];
+
+const out = `// Bộ thẻ có sẵn: PRM393, sinh từ scripts/src/PRM393_SU26_FE.md và PRM392_2025_cau_on_PRM393.md bằng scripts/gen-prm393.mjs.
 // Mặt trước: câu hỏi kèm các phương án. Mặt sau: đáp án. Được thêm một lần vào dữ liệu người dùng (store.js).
 (window.App = window.App || {}).PACKS = (window.App.PACKS || []).concat(
-${JSON.stringify(pack, null, 1)}
+${packs.map((p) => JSON.stringify(p, null, 1)).join(",\n")}
 );
 `;
 writeFileSync(join(root, "assets/data/prm393.js"), out);
